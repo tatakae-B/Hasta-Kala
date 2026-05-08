@@ -1,0 +1,87 @@
+<resources>
+    <string name="app_name">Hasta-Kala Shop</string>
+    <!-- Replace with your actual Web Client ID from Google Cloud Console / google-services.json -->
+    <string name="default_web_client_id">521031700362-si8kb93vv6ec9sq731k6d8jac3g7ohlv.apps.googleusercontent.com</string>
+
+    <!-- Auth Strings -->
+    <string name="google_sign_in_failed">Google Sign In Failed: %1$s</string>
+    <string name="auth_failed">Authentication Failed: %1$s</string>
+    <string name="fill_all_fields">Please fill all fields</string>
+    <string name="registration_failed">Registration Failed: %1$s</string>
+    <string name="reset_email_sent">Reset email sent to %1$s</string>
+    <string name="enter_email_reset">Enter email to reset password</string>
+    <string name="enter_phone">Enter phone number</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="verification_failed">Verification failed: %1$s</string>
+    <string name="otp_sent">OTP Sent</string>
+    <string name="phone_auth_failed">Phone Auth Failed: %1$s</string>
+    <string name="verify_email_first">Please verify your email first.</string>
+    <string name="google_auth_failed">Firebase Google Auth Failed</string>
+    <string name="password_too_short">Password too short</string>
+
+    <!-- Profile Setup -->
+    <string name="enter_name">Please enter your name</string>
+    <string name="profile_welcome_sent">Welcome email and verification sent</string>
+    <string name="error_saving_profile">Error saving profile: %1$s</string>
+    <string name="failed_update_profile">Failed to update profile</string>
+    <string name="profile_setup_complete">Profile Setup Complete</string>
+
+    <!-- UI Labels & Dashboard -->
+    <string name="menu_title">Hasta Kala Menu</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_products">Products</string>
+    <string name="nav_add_product">Add Product</string>
+    <string name="nav_sales">Sales</string>
+    <string name="nav_profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="guest_profile">Guest Profile</string>
+    <string name="user_profile">User Profile</string>
+    <string name="guest_hint">You are currently logged in as a Guest. Please sign in to sync your data.</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="csv_exported">CSV exported to: %1$s</string>
+
+    <string name="label_categories">Categories</string>
+    <string name="label_all">All</string>
+    <string name="stat_total_sales">Total Sales</string>
+    <string name="stat_total_products">Total Products</string>
+    <string name="stat_low_stock">Low Stock</string>
+    <string name="stat_profit">Profit</string>
+    <string name="label_sales_summary">Sales Summary</string>
+    <string name="label_top_products">Top Products</string>
+    <string name="label_sold_count">%1$d sold</string>
+    <string name="label_performance_overview">Category Performance Overview</string>
+    <string name="btn_export_csv">EXPORT LOG (CSV)</string>
+    <string name="chart_total_label">Total\nRs. %1$s</string>
+
+    <!-- Product Management -->
+    <string name="title_add_product">Add New Product</string>
+    <string name="title_edit_product">Edit %1$s</string>
+    <string name="step_select_category">Step 1: Select Category</string>
+    <string name="step_quick_pick">Step 2: Quick Pick Product</string>
+    <string name="hint_product_name">Product Name</string>
+    <string name="hint_color_variant">Color / Variant</string>
+    <string name="hint_cost_price">Cost Price</string>
+    <string name="hint_selling_price">Selling Price</string>
+    <string name="hint_initial_stock">Initial Stock</string>
+    <string name="hint_low_stock_alert">Low Stock Alert</string>
+    <string name="btn_save_product">SAVE PRODUCT</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- Sales -->
+    <string name="title_add_sale">Add Sale</string>
+    <string name="label_filter_category">Filter by Category</string>
+    <string name="hint_select_product">Select Product</string>
+    <string name="msg_no_products">No products found</string>
+    <string name="label_product_stock_hint">%1$s (%2$d left)</string>
+    <string name="hint_quantity_sold">Quantity Sold</string>
+    <string name="error_insufficient_stock">Insufficient stock! Available: %1$d</string>
+    <string name="label_total_price">Total Price</string>
+    <string name="btn_submit_sale">SUBMIT SALE</string>
+
+    <!-- Time Filters -->
+    <string name="filter_today">Today</string>
+    <string name="filter_week">Week</string>
+    <string name="filter_month">Month</string>
+    <string name="filter_all">All Time</string>
+</resources>

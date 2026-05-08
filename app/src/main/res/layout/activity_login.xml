@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="48dp"
+        android:src="@drawable/logo"
+        android:contentDescription="Hasta Kala Logo" />
+
+    <Button
+        android:id="@+id/startLoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login / Register"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/startGuestButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:text="Continue as Guest" />
+
+</LinearLayout>

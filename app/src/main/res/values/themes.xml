@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/purple_500</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+    </style>
+
+    <!-- Theme for Login Activity to force light mode -->
+    <style name="Theme.MyApplication.Login" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="android:statusBarColor">@color/purple_500</item>
+    </style>
+</resources>
