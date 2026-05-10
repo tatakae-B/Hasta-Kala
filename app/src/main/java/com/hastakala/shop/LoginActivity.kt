@@ -22,32 +22,11 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        setContentView(R.layout.activity_login)
-
-        val startLoginButton = findViewById<Button>(R.id.startLoginButton)
-        val startGuestButton = findViewById<Button>(R.id.startGuestButton)
-
-        // 1st button: Navigate to Login/Register options (AuthActivity)
-        startLoginButton.setOnClickListener {
-            val intent = Intent(this, AuthActivity::class.java)
-            startActivity(intent)
-        }
-
-        // 2nd button: Continue anonymously
-        startGuestButton.setOnClickListener {
-            auth.signInAnonymously()
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        android.widget.Toast.makeText(baseContext, "Authentication failed.",
-                            android.widget.Toast.LENGTH_SHORT).show()
-                    }
-                }
-        }
+        // The old LoginActivity is no longer needed as a UI entry point.
+        // If we reach here, we should redirect to the ArtisanAuthActivity via the Splash/Welcome flow,
+        // but for safety/legacy entry points, we redirect immediately to ArtisanAuthActivity.
+        val intent = Intent(this, ArtisanAuthActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

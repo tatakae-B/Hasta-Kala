@@ -181,7 +181,8 @@
                     android:id="@+id/emailEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textColor="#1C1917" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -200,7 +201,8 @@
                     android:id="@+id/passwordEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    android:textColor="#1C1917" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -271,7 +273,8 @@
                     android:id="@+id/phoneEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone" />
+                    android:inputType="phone"
+                    android:textColor="#1C1917" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -304,7 +307,8 @@
                     android:id="@+id/otpEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textColor="#1C1917" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -320,6 +324,40 @@
                 android:textStyle="bold"
                 android:visibility="gone"
                 app:backgroundTint="@null" />
+
+            <LinearLayout
+                android:id="@+id/resendLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/resendTimerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Resend in 60s"
+                    android:textColor="#666666" />
+
+                <Button
+                    android:id="@+id/resendOtpButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/resend_otp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/editPhoneBtn"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/edit_phone_number"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/backToOptionsPhone"
@@ -451,6 +489,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/credit_crafted_by"
+            android:textColor="#BDBDBD"
+            android:textSize="11sp" />
 
     </LinearLayout>
 </ScrollView>

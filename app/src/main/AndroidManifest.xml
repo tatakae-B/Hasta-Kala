@@ -31,6 +31,11 @@
             android:theme="@style/Theme.MyApplication.Login" />
 
         <activity
+            android:name=".ArtisanAuthActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MyApplication.Login" />
+
+        <activity
             android:name=".ProfileSetupActivity"
             android:exported="false"
             android:theme="@style/Theme.MyApplication.Login" />
@@ -41,6 +46,16 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication">
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

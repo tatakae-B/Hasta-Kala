@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +13,12 @@ plugins {
 android {
     namespace = "com.hastakala.shop"
     compileSdk = 35
+
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
+    }
 
     defaultConfig {
         applicationId = "com.hastakala.shop"
@@ -39,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -51,6 +61,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation(libs.androidx.activity.compose)
+    implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -66,6 +77,7 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation(libs.google.generativeai)
     
     // Firebase
     implementation(platform(libs.firebase.bom))
@@ -74,6 +86,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation(libs.google.play.services.auth)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation(libs.androidx.datastore.preferences)
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

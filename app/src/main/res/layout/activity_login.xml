@@ -28,4 +28,12 @@
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:text="Continue as Guest" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/credit_powered_by"
+        android:textColor="#9E9E9E"
+        android:textSize="12sp" />
+
 </LinearLayout>

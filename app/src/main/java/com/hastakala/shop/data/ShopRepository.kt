@@ -9,7 +9,7 @@ class ShopRepository(private val dao: AppDao) {
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    private fun getUserId(): String? = auth.currentUser?.uid
+    fun getUserId(): String? = auth.currentUser?.uid
 
     fun observeProducts(): Flow<List<Product>> = dao.observeProducts()
     fun observeSales(): Flow<List<SaleRecord>> = dao.observeSales()
@@ -160,6 +160,15 @@ class ShopRepository(private val dao: AppDao) {
 
     suspend fun saveUserProfile(profile: UserProfile) {
         firestore.collection("users").document(profile.uid).set(profile).await()
+    }
+
+    suspend fun getUserProfile(): UserProfile? {
+        val uid = getUserId() ?: return null
+        return try {
+            firestore.collection("users").document(uid).get().await().toObject(UserProfile::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     suspend fun clearLocalData() = dao.clearAllData()

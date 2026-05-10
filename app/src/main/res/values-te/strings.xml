@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">హస్త-కళా షాప్</string>
+    <string name="nav_home">హోమ్</string>
+    <string name="nav_products">ఉత్పత్తులు</string>
+    <string name="nav_add_product">ఉత్పత్తిని జోడించండి</string>
+    <string name="nav_sales">అమ్మకాలు</string>
+    <string name="nav_profile">ప్రొఫైల్</string>
+    <string name="logout">లాగ్ అవుట్</string>
+    <string name="menu_title">హస్త కళా మెనూ</string>
+    <string name="title_settings">సెట్టింగ్స్</string>
+    <string name="section_language">భాష</string>
+    <string name="lang_english">English</string>
+    <string name="lang_malayalam">മലയാളം</string>
+    <string name="lang_hindi">हिन्दी</string>
+    <string name="lang_tamil">தமிழ்</string>
+    <string name="lang_kannada">ಕನ್ನಡ</string>
+    <string name="lang_telugu">తెలుగు</string>
+    <string name="btn_close">మూసివేయి</string>
+</resources>

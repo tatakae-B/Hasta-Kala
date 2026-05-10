@@ -43,3 +43,10 @@ data class CategorySalesTotal(
     val category: String,
     val revenue: Double
 )
+
+data class SlowMovingProduct(
+    val product: Product,
+    val totalSold: Int,
+    val lastSoldTimestamp: Long?,
+    val revenue: Double
+)

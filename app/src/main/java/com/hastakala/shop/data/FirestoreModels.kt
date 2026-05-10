@@ -7,6 +7,8 @@ data class UserProfile(
     val fullName: String = "",
     val email: String = "",
     val contact: String = "",
+    val shopName: String = "",
+    val location: String = "",
     val loginMethod: String = "",
     val createdAt: Timestamp = Timestamp.now()
 )

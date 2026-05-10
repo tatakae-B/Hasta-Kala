@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">ಹಸ್ತ-ಕಲಾ ಶಾಪ್</string>
+    <string name="nav_home">ಹೋಮ್</string>
+    <string name="nav_products">ಉತ್ಪನ್ನಗಳು</string>
+    <string name="nav_add_product">ಉತ್ಪನ್ನ ಸೇರಿಸಿ</string>
+    <string name="nav_sales">ಮಾರಾಟ</string>
+    <string name="nav_profile">ಪ್ರೊಫೈಲ್</string>
+    <string name="logout">ಲಾಗ್ ಔಟ್</string>
+    <string name="menu_title">ಹಸ್ತ ಕಲಾ ಮೆನು</string>
+    <string name="title_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="section_language">ಭಾಷೆ</string>
+    <string name="lang_english">English</string>
+    <string name="lang_malayalam">മലയാളം</string>
+    <string name="lang_hindi">हिन्दी</string>
+    <string name="lang_tamil">தமிழ்</string>
+    <string name="lang_kannada">ಕನ್ನಡ</string>
+    <string name="lang_telugu">తెలుగు</string>
+
+    <!-- Landing & Login -->
+    <string name="welcome_title">ಹಸ್ತ ಕಲಾಗೆ ಸುಸ್ವಾಗತ</string>
+    <string name="welcome_subtitle">ನಿಮ್ಮ ಕರಕುಶಲ ವ್ಯವಹಾರವನ್ನು ಸುಲಭವಾಗಿ ನಿರ್ವಹಿಸಿ</string>
+    <string name="welcome_desc">ಆಧುನಿಕ ಡಿಜಿಟಲ್ ಲೆನ್ಸ್ ಮೂಲಕ ಕರಕುಶಲ ಕಲೆಯ ಆತ್ಮವನ್ನು ಅನ್ವೇಷಿಸಿ.</string>
+    <string name="btn_get_started">ಪ್ರಾರಂಭಿಸಿ</string>
+    <string name="login_register">ಲಾಗಿನ್ / ನೋಂದಣಿ</string>
+    <string name="continue_guest">ಅತಿಥಿಯಾಗಿ ಮುಂದುವರಿಯಿರಿ</string>
+    <string name="welcome_back">ಮರಳಿ ಸ್ವಾಗತ!</string>
+    <string name="login_subtitle">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಮುಂದುವರಿಸಲು ಲಾಗಿನ್ ಮಾಡಿ</string>
+    <string name="empowering_artisans">ಕುಶಲಕರ್ಮಿಗಳನ್ನು ಡಿಜಿಟಲ್ ಆಗಿ ಸಬಲೀಕರಣಗೊಳಿಸುವುದು</string>
+    <string name="tab_mobile_login">ಮೊಬೈಲ್ ಲಾಗಿನ್</string>
+    <string name="tab_email_login">ಇಮೇಲ್ ಲಾಗಿನ್</string>
+    <string name="placeholder_mobile">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</string>
+    <string name="placeholder_email">ಇಮೇಲ್ ವಿಳಾಸ</string>
+    <string name="btn_send_otp">OTP ಕಳುಹಿಸಿ</string>
+    <string name="btn_continue">ಮುಂದುವರಿಯಿರಿ</string>
+    <string name="btn_continue_google">ಗೂಗಲ್ ಮೂಲಕ ಮುಂದುವರಿಯಿರಿ</string>
+    <string name="feature_secure">ಸುರಕ್ಷಿತ ಮತ್ತು ವಿಶ್ವಾಸಾರ್ಹ</string>
+    <string name="feature_grow">ವ್ಯವಹಾರವನ್ನು ಬೆಳೆಸಿ</string>
+    <string name="feature_made_for_artisans">ಕುಶಲಕರ್ಮಿಗಳಿಗಾಗಿ ಮಾಡಲ್ಪಟ್ಟಿದೆ</string>
+    <string name="new_to_hastakala">ಹಸ್ತ ಕಲಾಗೆ ಹೊಸಬರೇ? </string>
+    <string name="create_account">ಖಾತೆ ತೆರೆಯಿರಿ</string>
+    <string name="handmade_tradition">ಸಂಪ್ರದಾಯದೊಂದಿಗೆ ಕೈಯಿಂದ ತಯಾರಿಸಿದ</string>
+
+    <!-- Auth Errors & Status -->
+    <string name="enter_phone">ಫೋನ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ</string>
+    <string name="enter_otp">OTP ನಮೂದಿಸಿ</string>
+    <string name="otp_sent">OTP ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ</string>
+    <string name="resend_otp">OTP ಮತ್ತೆ ಕಳುಹಿಸಿ</string>
+    <string name="invalid_phone">ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</string>
+
+    <string name="btn_close">ಮುಚ್ಚಿ</string>
+</resources>

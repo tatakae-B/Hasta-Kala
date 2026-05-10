@@ -8,6 +8,8 @@ import com.hastakala.shop.data.Product
 import com.hastakala.shop.data.ProductSalesTotal
 import com.hastakala.shop.data.SaleRecord
 import com.hastakala.shop.data.ShopRepository
+import androidx.datastore.preferences.core.Preferences
+import com.hastakala.shop.data.PreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -25,8 +28,35 @@ enum class TimeFilter { TODAY, WEEK, MONTH, ALL, CUSTOM }
 
 @HiltViewModel
 class ShopViewModel @Inject constructor(
-    private val repository: ShopRepository
+    private val repository: ShopRepository,
+    private val preferenceManager: PreferenceManager
 ) : ViewModel() {
+
+    val darkMode = preferenceManager.darkModeFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    val themeColor = preferenceManager.themeColorFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Brown")
+    val fontSize = preferenceManager.fontSizeFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Medium")
+    val autoSaveBills = preferenceManager.autoSaveBillsFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    val saleConfirmation = preferenceManager.saleConfirmationFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    val defaultQty = preferenceManager.defaultQtyFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1)
+    val currency = preferenceManager.currencyFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "₹")
+    val lowStockAlerts = preferenceManager.lowStockAlertsFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    val minStockThreshold = preferenceManager.minStockThresholdFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 5f)
+    val stockNotifications = preferenceManager.stockNotificationsFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    val autoBackup = preferenceManager.autoBackupFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    val exportFormat = preferenceManager.exportFormatFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "PDF")
+    val weeklySummary = preferenceManager.weeklySummaryFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    val backupReminders = preferenceManager.backupRemindersFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    val language = preferenceManager.languageFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "English")
+    val appLock = preferenceManager.appLockFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    val unlockMethod = preferenceManager.unlockMethodFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Biometric")
+    val appPin = preferenceManager.appPinFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    val lastBackupTime = preferenceManager.lastBackupTimeFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    fun <T> updatePreference(key: Preferences.Key<T>, value: T) {
+        viewModelScope.launch {
+            preferenceManager.updatePreference(key, value)
+        }
+    }
 
     val products: StateFlow<List<Product>> = repository.observeProducts()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -54,6 +84,9 @@ class ShopViewModel @Inject constructor(
     private val _categoryBreakdown = MutableStateFlow<List<CategorySalesTotal>>(emptyList())
     val categoryBreakdown = _categoryBreakdown.asStateFlow()
 
+    private val _slowMovingProducts = MutableStateFlow<List<com.hastakala.shop.data.SlowMovingProduct>>(emptyList())
+    val slowMovingProducts = _slowMovingProducts.asStateFlow()
+
     private val _revenue = MutableStateFlow(0.0)
     val revenue = _revenue.asStateFlow()
 
@@ -75,9 +108,29 @@ class ShopViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    private val _saleSuccess = MutableSharedFlow<Boolean>()
+    val saleSuccess = _saleSuccess.asSharedFlow()
+
+    private val _userProfile = MutableStateFlow<com.hastakala.shop.data.UserProfile?>(null)
+    val userProfile = _userProfile.asStateFlow()
+
+    private val _isAppLocked = MutableStateFlow(false)
+    val isAppLocked = _isAppLocked.asStateFlow()
+
+    fun setAppLocked(locked: Boolean) {
+        _isAppLocked.value = locked
+    }
+
+    fun setAppPin(pin: String) {
+        viewModelScope.launch {
+            preferenceManager.updatePreference(PreferenceManager.APP_PIN, pin)
+        }
+    }
+
     init {
         viewModelScope.launch {
             refreshData(forceClear = true)
+            _userProfile.value = repository.getUserProfile()
         }
         viewModelScope.launch {
             sales.collect {
@@ -144,6 +197,7 @@ class ShopViewModel @Inject constructor(
         viewModelScope.launch {
             repository.recordSale(product, qty.coerceAtMost(product.stock))
             refreshAnalytics()
+            _saleSuccess.emit(true)
         }
     }
 
@@ -180,6 +234,22 @@ class ShopViewModel @Inject constructor(
                 .groupBy { it.category }
                 .map { CategorySalesTotal(category = it.key, revenue = it.value.sumOf { row -> row.subtotal }) }
                 .sortedByDescending { it.revenue }
+
+            // Calculate Slow Moving Products
+            val productSalesMap = filtered.groupBy { it.productId }
+            val allProducts = products.value
+            
+            _slowMovingProducts.value = allProducts.map { prod ->
+                val salesForProd = productSalesMap[prod.id] ?: emptyList()
+                com.hastakala.shop.data.SlowMovingProduct(
+                    product = prod,
+                    totalSold = salesForProd.sumOf { it.quantity },
+                    lastSoldTimestamp = salesForProd.maxByOrNull { it.timestamp }?.timestamp,
+                    revenue = salesForProd.sumOf { it.subtotal }
+                )
+            }.filter { it.product.stock > 0 } // Only consider products currently in stock
+             .sortedWith(compareBy({ it.totalSold }, { it.revenue }))
+             .take(10) // Focus on the top 10 bottlenecks
         }
     }
 
@@ -189,7 +259,8 @@ class ShopViewModel @Inject constructor(
             val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(sale.timestamp))
             "$date,${sale.productName},${sale.category},${sale.color},${sale.quantity},${sale.unitPrice},${sale.subtotal}"
         }
-        return (listOf(header) + rows).joinToString("\n")
+        val credit = "\n\nGenerated by Hasta-Kala Shop - Crafted by bdriii"
+        return (listOf(header) + rows).joinToString("\n") + credit
     }
 
     fun notifyExported(path: String) {
@@ -202,6 +273,21 @@ class ShopViewModel @Inject constructor(
         viewModelScope.launch {
             repository.clearLocalData()
             onComplete()
+        }
+    }
+
+    fun updateUserProfile(fullName: String, shopName: String, contact: String, location: String) {
+        val uid = repository.getUserId() ?: return
+        val newProfile = com.hastakala.shop.data.UserProfile(
+            uid = uid,
+            fullName = fullName,
+            shopName = shopName,
+            contact = contact,
+            location = location
+        )
+        viewModelScope.launch {
+            repository.saveUserProfile(newProfile)
+            _userProfile.value = newProfile
         }
     }
 

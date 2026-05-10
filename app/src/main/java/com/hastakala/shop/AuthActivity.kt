@@ -1,15 +1,18 @@
 package com.hastakala.shop
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -18,7 +21,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
@@ -32,10 +37,17 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
     
     private var verificationId: String? = null
+    private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
+    private var countDownTimer: CountDownTimer? = null
+
     private lateinit var phoneEditText: EditText
     private lateinit var otpEditText: EditText
     private lateinit var sendOtpButton: Button
     private lateinit var verifyOtpButton: Button
+    private lateinit var resendOtpButton: Button
+    private lateinit var resendTimerText: TextView
+    private lateinit var resendLayout: LinearLayout
+    private lateinit var editPhoneBtn: Button
     private lateinit var loadingBar: ProgressBar
 
     // Layout containers
@@ -48,14 +60,61 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        auth = FirebaseAuth.getInstance()
+        // Restore state if available
+        if (savedInstanceState != null) {
+            verificationId = savedInstanceState.getString("verificationId")
+            // Note: resendToken cannot be easily serialized, but verificationId helps
+        }
 
+        auth = FirebaseAuth.getInstance()
+        auth.useAppLanguage() 
+
+        val prefill = intent.getStringExtra("prefill")
+        val action = intent.getStringExtra("action")
+        val regEmail = intent.getStringExtra("email")
+        val regPassword = intent.getStringExtra("password")
+        val regName = intent.getStringExtra("name")
+        val regPhone = intent.getStringExtra("phone")
+
+        Log.d("AuthActivity", "Firebase Auth initialized")
+        
         // Initialize UI Elements
         loadingBar = findViewById(R.id.loadingBar)
         authOptionsContainer = findViewById(R.id.authOptionsContainer)
         emailSection = findViewById(R.id.emailSection)
         phoneSection = findViewById(R.id.phoneSection)
         registerSection = findViewById(R.id.registerSection)
+
+        phoneEditText = findViewById(R.id.phoneEditText)
+        otpEditText = findViewById(R.id.otpEditText)
+        
+        if (prefill != null) {
+            if (prefill.contains("@")) {
+                findViewById<EditText>(R.id.emailEditText).setText(prefill)
+                showSection(emailSection)
+            } else {
+                phoneEditText.setText(prefill)
+                showSection(phoneSection)
+            }
+        }
+
+        if (action == "register") {
+            showSection(registerSection)
+            findViewById<EditText>(R.id.regNameEditText).setText(regName)
+            findViewById<EditText>(R.id.regEmailEditText).setText(regEmail)
+            findViewById<EditText>(R.id.regPasswordEditText).setText(regPassword)
+            findViewById<EditText>(R.id.regContactEditText).setText(regPhone)
+        } else if (action == "google") {
+            showLoading(true)
+            val signInIntent = googleSignInClient.signInIntent
+            googleSignInLauncher.launch(signInIntent)
+        }
+        sendOtpButton = findViewById(R.id.sendOtpButton)
+        verifyOtpButton = findViewById(R.id.verifyOtpButton)
+        resendOtpButton = findViewById(R.id.resendOtpButton)
+        resendTimerText = findViewById(R.id.resendTimerText)
+        resendLayout = findViewById(R.id.resendLayout)
+        editPhoneBtn = findViewById(R.id.editPhoneBtn)
 
         val emailOptionCard = findViewById<MaterialCardView>(R.id.emailOptionCard)
         val phoneOptionCard = findViewById<MaterialCardView>(R.id.phoneOptionCard)
@@ -102,7 +161,15 @@ class AuthActivity : AppCompatActivity() {
         }
 
         backToOptionsEmail.setOnClickListener { showSection(authOptionsContainer) }
-        backToOptionsPhone.setOnClickListener { showSection(authOptionsContainer) }
+        backToOptionsPhone.setOnClickListener { 
+            resetPhoneSection()
+            showSection(authOptionsContainer) 
+        }
+
+        val editPhoneBtn = findViewById<Button>(R.id.editPhoneBtn)
+        editPhoneBtn.setOnClickListener {
+            resetPhoneSection()
+        }
         backToOptionsReg.setOnClickListener { showSection(authOptionsContainer) }
         backToLoginFromReg.setOnClickListener { showSection(emailSection) }
 
@@ -124,13 +191,14 @@ class AuthActivity : AppCompatActivity() {
                     val credential = com.google.firebase.auth.EmailAuthProvider.getCredential(email, password)
                     currentUser.linkWithCredential(credential)
                         .addOnCompleteListener(this) { task ->
-                            showLoading(false)
                             if (task.isSuccessful) {
+                                showLoading(false)
                                 handleLoginSuccess(false, email)
                             } else {
                                 // If linking fails (e.g. account exists), try normal sign in
                                 auth.signInWithEmailAndPassword(email, password)
                                     .addOnCompleteListener(this) { loginTask ->
+                                        showLoading(false)
                                         if (loginTask.isSuccessful) {
                                             handleLoginSuccess(false, email)
                                         } else {
@@ -182,7 +250,7 @@ class AuthActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         showLoading(false)
                         if (task.isSuccessful) {
-                            // Optionally save name and contact to Firebase Profile or Database
+                            auth.currentUser?.sendEmailVerification()
                             handleLoginSuccess(true, email)
                         } else {
                             Toast.makeText(this, getString(R.string.registration_failed, task.exception?.message), Toast.LENGTH_LONG).show()
@@ -203,25 +271,19 @@ class AuthActivity : AppCompatActivity() {
         }
 
         // Phone Section
-        phoneEditText = findViewById(R.id.phoneEditText)
-        otpEditText = findViewById(R.id.otpEditText)
-        sendOtpButton = findViewById(R.id.sendOtpButton)
-        verifyOtpButton = findViewById(R.id.verifyOtpButton)
-        val otpLayout = findViewById<View>(R.id.otpLayout)
-
         sendOtpButton.setOnClickListener {
             val phoneNumber = phoneEditText.text.toString().trim()
-            if (phoneNumber.isNotEmpty()) {
+            if (phoneNumber.length >= 10) {
                 showLoading(true)
-                startPhoneNumberVerification("+" + phoneNumber)
+                startPhoneNumberVerification("+91" + phoneNumber) // Assuming default region is India, fix later with picker
             } else {
-                Toast.makeText(this, getString(R.string.enter_phone), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.invalid_phone), Toast.LENGTH_SHORT).show()
             }
         }
 
         verifyOtpButton.setOnClickListener {
             val code = otpEditText.text.toString().trim()
-            if (code.isNotEmpty() && verificationId != null) {
+            if (code.length == 6 && verificationId != null) {
                 showLoading(true)
                 val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
                 signInWithPhoneAuthCredential(credential)
@@ -229,6 +291,47 @@ class AuthActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.enter_otp), Toast.LENGTH_SHORT).show()
             }
         }
+
+        resendOtpButton.setOnClickListener {
+            val phoneNumber = phoneEditText.text.toString().trim()
+            if (phoneNumber.isNotEmpty() && resendToken != null) {
+                showLoading(true)
+                resendVerificationCode("+91$phoneNumber", resendToken)
+            }
+        }
+    }
+
+    private fun showTooManyRequestsDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.too_many_requests_title))
+            .setMessage(getString(R.string.too_many_requests_message))
+            .setPositiveButton(getString(R.string.btn_use_google)) { _, _ ->
+                showSection(authOptionsContainer)
+                showLoading(true)
+                val signInIntent = googleSignInClient.signInIntent
+                googleSignInLauncher.launch(signInIntent)
+            }
+            .setNegativeButton(getString(R.string.btn_cancel), null)
+            .show()
+    }
+
+    private fun showProviderDisabledDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.config_issue_title))
+            .setMessage(getString(R.string.config_issue_phone_disabled))
+            .setPositiveButton(getString(R.string.btn_use_google)) { _, _ ->
+                showSection(authOptionsContainer)
+                showLoading(true)
+                val signInIntent = googleSignInClient.signInIntent
+                googleSignInLauncher.launch(signInIntent)
+            }
+            .setNegativeButton(getString(R.string.btn_cancel), null)
+            .show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("verificationId", verificationId)
     }
 
     private fun showSection(section: View) {
@@ -240,8 +343,20 @@ class AuthActivity : AppCompatActivity() {
         section.visibility = View.VISIBLE
     }
 
+    private fun resetPhoneSection() {
+        countDownTimer?.cancel()
+        resendLayout.visibility = View.GONE
+        editPhoneBtn.visibility = View.GONE
+        findViewById<View>(R.id.otpLayout).visibility = View.GONE
+        verifyOtpButton.visibility = View.GONE
+        sendOtpButton.visibility = View.VISIBLE
+        phoneEditText.isEnabled = true
+        otpEditText.setText("")
+    }
+
     private fun showLoading(isLoading: Boolean) {
         loadingBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.rootLayout).alpha = if (isLoading) 0.5f else 1.0f
         emailSection.isEnabled = !isLoading
         phoneSection.isEnabled = !isLoading
         registerSection.isEnabled = !isLoading
@@ -255,26 +370,105 @@ class AuthActivity : AppCompatActivity() {
             .setActivity(this)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    Log.d("AuthActivity", "onVerificationCompleted: $credential")
                     showLoading(false)
+                    // Auto-retrieval or instant verification
+                    otpEditText.setText(credential.smsCode)
                     signInWithPhoneAuthCredential(credential)
                 }
 
                 override fun onVerificationFailed(e: FirebaseException) {
+                    Log.e("AuthActivity", "Full Error: ${e.javaClass.simpleName} - ${e.message}")
                     showLoading(false)
-                    Toast.makeText(this@AuthActivity, getString(R.string.verification_failed, e.message), Toast.LENGTH_LONG).show()
+                    
+                    // Detailed Logcat output for developer
+                    e.printStackTrace()
+
+                    when {
+                        e is FirebaseAuthInvalidCredentialsException -> {
+                            Toast.makeText(this@AuthActivity, "Invalid Request: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                        }
+                        e is FirebaseTooManyRequestsException -> {
+                            showTooManyRequestsDialog()
+                        }
+                        e.message?.contains("This operation is not allowed", ignoreCase = true) == true -> {
+                            showProviderDisabledDialog()
+                        }
+                        else -> {
+                            Toast.makeText(this@AuthActivity, getString(R.string.verification_failed, e.localizedMessage), Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
 
                 override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                    Log.d("AuthActivity", "onCodeSent: $verificationId")
                     showLoading(false)
                     this@AuthActivity.verificationId = verificationId
+                    this@AuthActivity.resendToken = token
+                    
                     findViewById<View>(R.id.otpLayout).visibility = View.VISIBLE
                     verifyOtpButton.visibility = View.VISIBLE
+                    editPhoneBtn.visibility = View.VISIBLE
                     sendOtpButton.visibility = View.GONE
+                    phoneEditText.isEnabled = false // Lock phone number during verification
+                    
+                    startResendTimer()
                     Toast.makeText(this@AuthActivity, getString(R.string.otp_sent), Toast.LENGTH_SHORT).show()
                 }
             })
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    private fun resendVerificationCode(phoneNumber: String, token: PhoneAuthProvider.ForceResendingToken?) {
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(this)
+            .setForceResendingToken(token!!)
+            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    showLoading(false)
+                    signInWithPhoneAuthCredential(credential)
+                }
+
+                override fun onVerificationFailed(e: FirebaseException) {
+                    Log.e("AuthActivity", "resend onVerificationFailed: ${e.message}", e)
+                    showLoading(false)
+                    if (e.message?.contains("This operation is not allowed", ignoreCase = true) == true) {
+                        showProviderDisabledDialog()
+                    } else {
+                        Toast.makeText(this@AuthActivity, getString(R.string.verification_failed, e.localizedMessage), Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                    showLoading(false)
+                    this@AuthActivity.verificationId = verificationId
+                    startResendTimer()
+                    Toast.makeText(this@AuthActivity, "OTP Resent", Toast.LENGTH_SHORT).show()
+                }
+            })
+            .build()
+        PhoneAuthProvider.verifyPhoneNumber(options)
+    }
+
+    private fun startResendTimer() {
+        resendLayout.visibility = View.VISIBLE
+        resendOtpButton.visibility = View.GONE
+        resendTimerText.visibility = View.VISIBLE
+        
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                resendTimerText.text = getString(R.string.resend_in, millisUntilFinished / 1000)
+            }
+
+            override fun onFinish() {
+                resendTimerText.visibility = View.GONE
+                resendOtpButton.visibility = View.VISIBLE
+            }
+        }.start()
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
@@ -314,14 +508,15 @@ class AuthActivity : AppCompatActivity() {
     private fun handleLoginSuccess(isNewUser: Boolean, identifier: String?) {
         if (isNewUser) {
             val intent = Intent(this, ProfileSetupActivity::class.java)
+            intent.putExtra("name", findViewById<EditText>(R.id.regNameEditText).text.toString())
+            intent.putExtra("phone", findViewById<EditText>(R.id.regContactEditText).text.toString())
+            intent.putExtra("email", findViewById<EditText>(R.id.regEmailEditText).text.toString())
             startActivity(intent)
         } else {
-            // Check if email verified if using email/pass
             val user = auth.currentUser
             if (user != null && user.providerData.any { it.providerId == "password" } && !user.isEmailVerified) {
                 Toast.makeText(this, getString(R.string.verify_email_first), Toast.LENGTH_LONG).show()
-                // Optionally resend verification
-                // user.sendEmailVerification()
+                user.sendEmailVerification()
             }
 
             val intent = Intent(this, MainActivity::class.java)
@@ -342,7 +537,6 @@ class AuthActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         handleLoginSuccess(false, auth.currentUser?.email)
                     } else {
-                        // Linking failed (account likely already exists), proceed with sign in
                         auth.signInWithCredential(credential)
                             .addOnCompleteListener(this) { loginTask ->
                                 if (loginTask.isSuccessful) {
@@ -377,5 +571,10 @@ class AuthActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel()
     }
 }

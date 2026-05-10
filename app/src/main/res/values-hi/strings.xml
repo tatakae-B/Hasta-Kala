@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">हस्त-कला शॉप</string>
+    <string name="nav_home">होम</string>
+    <string name="nav_products">उत्पाद</string>
+    <string name="nav_add_product">उत्पाद जोड़ें</string>
+    <string name="nav_sales">बिक्री</string>
+    <string name="nav_profile">प्रोफ़ाइल</string>
+    <string name="logout">लॉग आउट</string>
+    <string name="menu_title">हस्त कला मेनू</string>
+    <string name="title_settings">सेटिंग्स</string>
+    <string name="section_language">भाषा</string>
+    <string name="lang_english">English</string>
+    <string name="lang_malayalam">മലയാളം</string>
+    <string name="lang_hindi">हिन्दी</string>
+    <string name="lang_tamil">தமிழ்</string>
+    <string name="lang_kannada">ಕನ್ನಡ</string>
+    <string name="lang_telugu">తెలుగు</string>
+
+    <!-- Landing & Login -->
+    <string name="welcome_title">हस्त कला में आपका स्वागत है</string>
+    <string name="welcome_subtitle">अपने हस्तनिर्मित व्यवसाय को आसानी से प्रबंधित करें</string>
+    <string name="welcome_desc">आधुनिक डिजिटल लेंस के माध्यम से कारीगर शिल्प कौशल की आत्मा की खोज करें।</string>
+    <string name="btn_get_started">शुरू करें</string>
+    <string name="login_register">लॉगिन / रजिस्टर</string>
+    <string name="continue_guest">अतिथि के रूप में जारी रखें</string>
+    <string name="welcome_back">वापसी पर स्वागत है!</string>
+    <string name="login_subtitle">अपनी यात्रा जारी रखने के लिए लॉगिन करें</string>
+    <string name="empowering_artisans">कारीगरों को डिजिटल रूप से सशक्त बनाना</string>
+    <string name="tab_mobile_login">मोबाइल लॉगिन</string>
+    <string name="tab_email_login">ईमेल लॉगिन</string>
+    <string name="placeholder_mobile">मोबाइल नंबर</string>
+    <string name="placeholder_email">ईमेल पता</string>
+    <string name="btn_send_otp">ओटीपी भेजें</string>
+    <string name="btn_continue">जारी रखें</string>
+    <string name="btn_continue_google">गूगल के साथ जारी रखें</string>
+    <string name="feature_secure">सुरक्षित और विश्वसनीय</string>
+    <string name="feature_grow">व्यवसाय बढ़ाएं</string>
+    <string name="feature_made_for_artisans">कारीगरों के लिए बनाया गया</string>
+    <string name="new_to_hastakala">हस्त कला में नए हैं? </string>
+    <string name="create_account">खाता बनाएं</string>
+    <string name="handmade_tradition">परंपरा के साथ हस्तनिर्मित</string>
+
+    <!-- Auth Errors & Status -->
+    <string name="enter_phone">फ़ोन नंबर दर्ज करें</string>
+    <string name="enter_otp">ओटीपी दर्ज करें</string>
+    <string name="otp_sent">ओटीपी सफलतापूर्वक भेजा गया</string>
+    <string name="resend_otp">ओटीपी पुन: भेजें</string>
+    <string name="invalid_phone">कृपया एक वैध फ़ोन नंबर दर्ज करें</string>
+
+    <string name="auth_title">ऐप लॉक</string>
+    <string name="auth_subtitle">अपनी दुकान का डेटा सुरक्षित करें</string>
+    <string name="auth_setup_confirm">क्या आप इस ऐप के लिए बायोमेट्रिक लॉक सक्षम करना चाहते हैं?</string>
+    <string name="btn_unlock_app">ऐप अनलॉक करें</string>
+    <string name="btn_close">बंद करें</string>
+    <string name="credit_app_version">वर्जन 1.0.0 • हस्त-कला शॉप</string>
+</resources>

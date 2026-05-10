@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">ஹஸ்த-கலா ஷாப்</string>
+    <string name="nav_home">முகப்பு</string>
+    <string name="nav_products">தயாரிப்புகள்</string>
+    <string name="nav_add_product">தயாரிப்பைச் சேர்</string>
+    <string name="nav_sales">விற்பனை</string>
+    <string name="nav_profile">சுயவிவரம்</string>
+    <string name="logout">வெளியேறு</string>
+    <string name="menu_title">ஹஸ்த கலா மெனு</string>
+    <string name="title_settings">அமைப்புகள்</string>
+    <string name="section_language">மொழி</string>
+    <string name="lang_english">English</string>
+    <string name="lang_malayalam">മലയാളം</string>
+    <string name="lang_hindi">हिन्दी</string>
+    <string name="lang_tamil">தமிழ்</string>
+    <string name="lang_kannada">ಕನ್ನಡ</string>
+    <string name="lang_telugu">తెలుగు</string>
+    <string name="btn_close">மூடு</string>
+</resources>

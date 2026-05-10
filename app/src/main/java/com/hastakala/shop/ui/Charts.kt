@@ -28,7 +28,7 @@ fun CategoryPieChart(
     if (data.isEmpty()) return
     
     val chartColor = if (isDarkMode) Color.WHITE else Color.BLACK
-    val centerTextColor = if (isDarkMode) Color.WHITE else Color.DKGRAY
+    val centerTextColor = if (isDarkMode) Color.WHITE else Color.parseColor("#3E2723") // OnSurface color
     
     val modernColors = listOf(
         Color.rgb(103, 58, 183), // Deep Purple
