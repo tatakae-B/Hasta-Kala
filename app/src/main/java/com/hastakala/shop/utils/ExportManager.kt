@@ -23,17 +23,18 @@ object ExportManager {
         context: Context,
         type: ExportType,
         format: ExportFormat,
+        timeRange: ExportTimeRange,
         sales: List<SaleRecord>,
         products: List<Product>,
+        expenses: List<com.hastakala.shop.data.Expense> = emptyList(),
         startDate: Long,
         endDate: Long,
         userProfile: com.hastakala.shop.data.UserProfile? = null
     ): String? = withContext(Dispatchers.IO) {
         val filteredSales = sales.filter { it.timestamp in startDate..endDate }
+        val filteredExpenses = expenses.filter { it.timestamp in startDate..endDate }
         
-        if (filteredSales.isEmpty() && type != ExportType.INVENTORY) {
-            return@withContext null
-        }
+        val isDetailed = timeRange == ExportTimeRange.TODAY || timeRange == ExportTimeRange.YESTERDAY
 
         val fileName = "HastaKala_${type.name}_${SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(Date())}"
         
@@ -45,16 +46,21 @@ object ExportManager {
 
         return@withContext when (format) {
             ExportFormat.PDF -> {
-                val filePath = PdfExporter.exportSalesToPdf(
-                    context, 
-                    filteredSales, 
-                    filteredSales.sumOf { it.subtotal },
-                    userProfile
+                PdfExporter.exportReport(
+                    context = context,
+                    type = type,
+                    timeRange = timeRange,
+                    isDetailed = isDetailed,
+                    sales = filteredSales,
+                    products = products,
+                    expenses = filteredExpenses,
+                    startDate = startDate,
+                    endDate = endDate,
+                    userProfile = userProfile
                 )
-                filePath
             }
             ExportFormat.CSV -> {
-                val csvContent = generateCsvContent(type, filteredSales, products)
+                val csvContent = generateCsvContent(type, filteredSales, products, filteredExpenses)
                 val file = File(exportsDir, "$fileName.csv")
                 file.writeText(csvContent)
                 file.absolutePath
@@ -62,26 +68,59 @@ object ExportManager {
         }
     }
 
-    private fun generateCsvContent(type: ExportType, sales: List<SaleRecord>, products: List<Product>): String {
+    private fun generateCsvContent(
+        type: ExportType, 
+        sales: List<SaleRecord>, 
+        products: List<Product>,
+        expenses: List<com.hastakala.shop.data.Expense>
+    ): String {
         return when (type) {
-            ExportType.SALES -> {
-                val header = "Date,Product,Category,Color,Quantity,UnitPrice,Subtotal\n"
+            ExportType.SALES, ExportType.ORDERS -> {
+                val header = "Date,Product,Category,Color,Quantity,UnitPrice,Subtotal,Payment,Customer,Notes\n"
                 val rows = sales.joinToString("\n") { sale ->
                     val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(sale.timestamp))
-                    "$date,${sale.productName},${sale.category},${sale.color},${sale.quantity},${sale.unitPrice},${sale.subtotal}"
+                    "\"$date\",\"${sale.productName}\",\"${sale.category}\",\"${sale.color}\",${sale.quantity},${sale.unitPrice},${sale.subtotal},\"${sale.paymentMethod}\",\"${sale.customerName}\",\"${sale.notes}\""
                 }
                 header + rows
             }
             ExportType.INVENTORY -> {
-                val header = "Product Name,Category,Color,Stock,Cost Price,Selling Price\n"
+                val header = "Product Name,Category,Color,Stock,Cost Price,Selling Price,Stock Value\n"
                 val rows = products.joinToString("\n") { p ->
-                    "${p.name},${p.category},${p.color},${p.stock},${p.costPrice},${p.sellingPrice}"
+                    "\"${p.name}\",\"${p.category}\",\"${p.color}\",${p.stock},${p.costPrice},${p.sellingPrice},${p.stock * p.sellingPrice}"
                 }
                 header + rows
             }
-            else -> "Feature coming soon for ${type.name}"
+            ExportType.EXPENSES -> {
+                val header = "Date,Category,Amount,Notes\n"
+                val rows = expenses.joinToString("\n") { e ->
+                    val date = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(e.timestamp))
+                    "\"$date\",\"${e.category}\",${e.amount},\"${e.notes}\""
+                }
+                header + rows
+            }
+            ExportType.CUSTOMERS -> {
+                val customers = sales.filter { it.customerName.isNotBlank() }
+                    .groupBy { it.customerName }
+                    .map { (name, s) ->
+                        val contact = s.firstOrNull { it.customerContact.isNotBlank() }?.customerContact ?: ""
+                        val totalSpent = s.sumOf { it.subtotal }
+                        val lastVisit = s.maxOf { it.timestamp }
+                        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(lastVisit))
+                        "\"$name\",\"$contact\",$totalSpent,\"$date\""
+                    }
+                val header = "Customer Name,Contact,Total Spent,Last Visit\n"
+                header + customers.joinToString("\n")
+            }
+            ExportType.REVENUE, ExportType.ARTISAN -> {
+                val totalSales = sales.sumOf { it.subtotal }
+                val totalCost = sales.sumOf { it.quantity * it.costPrice }
+                val totalExpenses = expenses.sumOf { it.amount }
+                val profit = totalSales - totalCost - totalExpenses
+                "Metric,Value\nTotal Sales,$totalSales\nTotal Cost of Goods,$totalCost\nTotal Expenses,$totalExpenses\nNet Profit,$profit"
+            }
         }
     }
+
 
     fun shareFile(context: Context, filePath: String) {
         val file = File(filePath)

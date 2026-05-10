@@ -4,6 +4,7 @@
     <string name="nav_products">ఉత్పత్తులు</string>
     <string name="nav_add_product">ఉత్పత్తిని జోడించండి</string>
     <string name="nav_sales">అమ్మకాలు</string>
+    <string name="nav_analytics">అనలిటిక్స్</string>
     <string name="nav_profile">ప్రొఫైల్</string>
     <string name="logout">లాగ్ అవుట్</string>
     <string name="menu_title">హస్త కళా మెనూ</string>
@@ -16,4 +17,80 @@
     <string name="lang_kannada">ಕನ್ನಡ</string>
     <string name="lang_telugu">తెలుగు</string>
     <string name="btn_close">మూసివేయి</string>
+
+    <!-- Landing & Login -->
+    <string name="welcome_title">హస్త కళకు స్వాగతం</string>
+    <string name="welcome_subtitle">మీ చేతిపనుల వ్యాపారాన్ని సులభంగా నిర్వహించండి</string>
+    <string name="welcome_desc">ఆధునిక డిజిటల్ లెన్స్ ద్వారా కళాకారుల నైపుణ్యం యొక్క ఆత్మను కనుగొనండి.</string>
+    <string name="btn_get_started">ప్రారంభించండి</string>
+    <string name="login_register">లాగిన్ / రిజిస్టర్</string>
+    <string name="continue_guest">అతిథిగా కొనసాగండి</string>
+    <string name="welcome_back">మళ్ళీ స్వాగతం!</string>
+    <string name="login_subtitle">మీ ప్రయాణాన్ని కొనసాగించడానికి లాగిన్ అవ్వండి</string>
+    <string name="empowering_artisans">కళాకారులను డిజిటల్‌గా శక్తివంతం చేయడం</string>
+    <string name="tab_mobile_login">మొబైల్ లాగిన్</string>
+    <string name="tab_email_login">ఈమెయిల్ లాగిన్</string>
+    <string name="placeholder_mobile">మొబైల్ సంఖ్య</string>
+    <string name="placeholder_email">ఈమెయిల్ చిరునామా</string>
+    <string name="btn_send_otp">OTP పంపండి</string>
+    <string name="btn_continue">కొనసాగండి</string>
+    <string name="btn_continue_google">గూగుల్‌తో కొనసాగండి</string>
+    <string name="feature_secure">సురక్షితమైనది &amp; నమ్మదగినది</string>
+    <string name="feature_grow">వ్యాపారాన్ని వృద్ధి చేయండి</string>
+    <string name="feature_made_for_artisans">కళాకారుల కోసం తయారు చేయబడింది</string>
+    <string name="new_to_hastakala">హస్త కళకు కొత్తా? </string>
+    <string name="create_account">ఖాతాను సృష్టించండి</string>
+
+    <!-- Auth Errors & Status -->
+    <string name="enter_phone">ఫోన్ నంబర్ నమోదు చేయండి</string>
+    <string name="enter_otp">OTP నమోదు చేయండి</string>
+    <string name="otp_sent">OTP విజయవంతంగా పంపబడింది</string>
+    <string name="resend_otp">OTPని మళ్ళీ పంపండి</string>
+    <string name="invalid_phone">దయచేసి చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి</string>
+
+    <!-- Profile Setup -->
+    <string name="hint_artisan_name">కళాకారుడి పేరు</string>
+    <string name="hint_shop_name">దుకాణం పేరు</string>
+    <string name="hint_email">ఈమెయిల్ చిరునామా</string>
+    <string name="hint_phone">ఫోన్ నంబర్</string>
+    <string name="hint_location">ప్రదేశము</string>
+    <string name="profile_updated">ప్రొఫైల్ విజయవంతంగా నవీకరించబడింది!</string>
+
+    <!-- Dashboard -->
+    <string name="stat_total_sales">మొత్తం అమ్మకాలు</string>
+    <string name="stat_total_products">మొత్తం ఉత్పత్తులు</string>
+    <string name="stat_low_stock">తక్కువ నిల్వ</string>
+    <string name="stat_profit">లాభం</string>
+    <string name="label_sales_summary">అమ్మకాల సారాంశం</string>
+    <string name="label_top_products">అగ్ర ఉత్పత్తులు</string>
+
+    <!-- Product Management -->
+    <string name="title_add_product">కొత్త ఉత్పత్తిని జోడించండి</string>
+    <string name="hint_product_name">ఉత్పత్తి పేరు</string>
+    <string name="hint_color_variant">రంగు / రకం</string>
+    <string name="hint_cost_price">కొన్న ధర</string>
+    <string name="hint_selling_price">అమ్మకపు ధర</string>
+    <string name="hint_initial_stock">ప్రారంభ నిల్వ</string>
+    <string name="btn_save_product">ఉత్పత్తిని సేవ్ చేయండి</string>
+    <string name="btn_update">అప్‌డేట్</string>
+    <string name="btn_cancel">రద్దు చేయి</string>
+
+    <!-- Categories -->
+    <string name="label_categories">వర్గాలు</string>
+    <string name="cat_pottery">కుమ్మరి &amp; మట్టి</string>
+    <string name="cat_textile">టెక్స్టైల్ &amp; చేనేత</string>
+    <string name="cat_jewellery">నగలు</string>
+    <string name="cat_wood">చెక్క &amp; వెదురు</string>
+    <string name="cat_art">కళ &amp; పెయింటింగ్స్</string>
+    <string name="cat_home">హోమ్ డెకర్</string>
+    <string name="cat_eco">పర్యావరణ అనుకూల ఉత్పత్తులు</string>
+    <string name="cat_misc">ఇతరాలు</string>
+
+    <!-- Security -->
+    <string name="section_security">భద్రత</string>
+    <string name="label_app_lock">యాప్ లాక్</string>
+    <string name="label_fingerprint">ఫింగర్‌ప్రింట్ అన్‌లాక్</string>
+    <string name="auth_title">యాప్ లాక్</string>
+    <string name="auth_subtitle">హస్త-కళా షాప్‌ను యాక్సెస్ చేయడానికి ప్రామాణీకరించండి</string>
+    <string name="btn_unlock_app">యాప్‌ను అన్‌లాక్ చేయండి</string>
 </resources>

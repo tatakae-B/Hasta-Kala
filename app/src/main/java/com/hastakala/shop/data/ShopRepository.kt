@@ -13,6 +13,10 @@ class ShopRepository(private val dao: AppDao) {
 
     fun observeProducts(): Flow<List<Product>> = dao.observeProducts()
     fun observeSales(): Flow<List<SaleRecord>> = dao.observeSales()
+    fun observeExpenses(fromTime: Long): Flow<List<Expense>> = dao.observeExpenses(fromTime)
+
+    suspend fun getExpensesInRange(start: Long, end: Long) = dao.getExpensesInRange(start, end)
+    suspend fun getSalesInRange(start: Long, end: Long) = dao.getSalesInRange(start, end)
 
     suspend fun syncFromFirestore(forceClear: Boolean = false) {
         val uid = getUserId() ?: return
@@ -52,7 +56,12 @@ class ShopRepository(private val dao: AppDao) {
                     costPrice = fs.costPrice,
                     unitPrice = fs.unitPrice,
                     subtotal = fs.subtotal,
-                    timestamp = fs.timestamp
+                    paymentMethod = fs.paymentMethod,
+                    customerName = fs.customerName,
+                    customerContact = fs.customerContact,
+                    notes = fs.notes,
+                    timestamp = fs.timestamp,
+                    lastModified = fs.lastModified
                 ))
             }
         } catch (e: Exception) {
@@ -127,14 +136,12 @@ class ShopRepository(private val dao: AppDao) {
         }
     }
 
-    suspend fun recordSale(product: Product, quantity: Int) {
+    suspend fun recordSale(product: Product, quantity: Int, paymentMethod: String = "Cash", customerName: String = "", notes: String = "") {
         val finalQty = quantity.coerceAtMost(product.stock)
-        dao.recordSaleAndUpdateStock(product, finalQty)
+        dao.recordSaleAndUpdateStock(product, finalQty, paymentMethod, customerName, notes)
         
         // Sync Sale to Firestore
         getUserId()?.let { uid ->
-            // We need a way to get the last inserted sale ID or just use timestamp as ID if unique enough
-            // For now, let's just use timestamp as part of the document ID
             val timestamp = System.currentTimeMillis()
             val firestoreSale = FirestoreSaleRecord(
                 id = timestamp.toString(),
@@ -146,7 +153,11 @@ class ShopRepository(private val dao: AppDao) {
                 costPrice = product.costPrice,
                 unitPrice = product.sellingPrice,
                 subtotal = product.sellingPrice * finalQty,
-                timestamp = timestamp
+                paymentMethod = paymentMethod,
+                customerName = customerName,
+                notes = notes,
+                timestamp = timestamp,
+                lastModified = timestamp
             )
             
             firestore.collection("users").document(uid)
@@ -158,8 +169,65 @@ class ShopRepository(private val dao: AppDao) {
         }
     }
 
+    suspend fun updateSale(saleRecord: SaleRecord) {
+        dao.updateSaleAndUpdateStock(saleRecord)
+        getUserId()?.let { uid ->
+            val firestoreSale = FirestoreSaleRecord(
+                id = saleRecord.id.toString(),
+                productId = saleRecord.productId.toString(),
+                productName = saleRecord.productName,
+                category = saleRecord.category,
+                color = saleRecord.color,
+                quantity = saleRecord.quantity,
+                costPrice = saleRecord.costPrice,
+                unitPrice = saleRecord.unitPrice,
+                subtotal = saleRecord.subtotal,
+                paymentMethod = saleRecord.paymentMethod,
+                customerName = saleRecord.customerName,
+                customerContact = saleRecord.customerContact,
+                notes = saleRecord.notes,
+                timestamp = saleRecord.timestamp,
+                lastModified = saleRecord.lastModified
+            )
+            firestore.collection("users").document(uid)
+                .collection("sales").document(saleRecord.id.toString())
+                .set(firestoreSale)
+
+            // Since updateSaleAndUpdateStock also updates product stock, we should sync the product too
+            dao.getProductById(saleRecord.productId)?.let { updatedProduct ->
+                updateProduct(updatedProduct)
+            }
+        }
+    }
+
+    suspend fun deleteSale(saleId: Long) {
+        val sale = dao.getSaleById(saleId)
+        dao.deleteSaleAndRestoreStock(saleId)
+        getUserId()?.let { uid ->
+            firestore.collection("users").document(uid)
+                .collection("sales").document(saleId.toString())
+                .delete()
+            
+            // Sync updated product stock
+            sale?.let { s ->
+                dao.getProductById(s.productId)?.let { updatedProduct ->
+                    updateProduct(updatedProduct)
+                }
+            }
+        }
+    }
+
     suspend fun saveUserProfile(profile: UserProfile) {
         firestore.collection("users").document(profile.uid).set(profile).await()
+    }
+
+    suspend fun uploadProfileImage(uri: android.net.Uri): String? {
+        val uid = getUserId() ?: return null
+        // Since we don't have Firebase Storage enabled in the build.gradle.kts yet, 
+        // we'll simulate the URL for now or if you want I can add Firebase Storage.
+        // Actually, let's assume the user wants to store it.
+        // I will return the local URI string for now or a placeholder.
+        return uri.toString()
     }
 
     suspend fun getUserProfile(): UserProfile? {

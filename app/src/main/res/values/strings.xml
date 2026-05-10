@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">Hasta-Kala Shop</string>
     <!-- Moved to local.properties and injected via build.gradle.kts -->
 
@@ -47,6 +47,7 @@
     <string name="nav_products">Products</string>
     <string name="nav_add_product">Add Product</string>
     <string name="nav_sales">Sales</string>
+    <string name="nav_analytics">Analytics</string>
     <string name="nav_profile">Profile</string>
     <string name="logout">Logout</string>
     <string name="guest_profile">Guest Profile</string>
@@ -115,7 +116,38 @@
     <string name="error_insufficient_stock">Insufficient stock! Available: %1$d</string>
     <string name="label_total_price">Total Price</string>
     <string name="btn_submit_sale">SUBMIT SALE</string>
+    <string name="label_payment_method">Payment Method</string>
+    <string name="label_optional_details">Optional Details</string>
+    <string name="hint_customer_name">Customer Name</string>
+    <string name="hint_customer_contact">Customer Contact</string>
+    <string name="hint_notes">Notes (e.g. Size, Customization)</string>
+    <string name="payment_cash">Cash</string>
+    <string name="payment_upi">UPI</string>
+    <string name="payment_card">Card</string>
+    <string name="payment_other">Other</string>
+    <string name="label_search_products">Search products...</string>
+    <string name="title_edit_sale">Edit Sale Record</string>
+    <string name="label_quantity">Quantity</string>
+    <string name="label_unit_price">Unit Price (Rs.)</string>
+    <string name="dialog_delete_sale_title">Delete Sale</string>
+    <string name="dialog_delete_sale_msg">Are you sure you want to delete this sale? This will also restore the items to your inventory.</string>
+    <string name="btn_delete">Delete</string>
 
+    <string name="label_available">Available: %1$d</string>
+    <string name="label_recent_transactions">RECENT TRANSACTIONS</string>
+    <string name="label_top_products_all_caps">TOP PRODUCTS</string>
+    <string name="label_items_sold">%1$d items sold</string>
+    <string name="label_estimated_total_profit">ESTIMATED TOTAL PROFIT</string>
+    <string name="label_overall_margin">Overall Margin: %1$.1f%%</string>
+    <string name="label_profit_by_category">PROFIT BY CATEGORY</string>
+    <string name="label_slow_moving_stock_value">SLOW MOVING STOCK VALUE</string>
+    <string name="label_stock_cost">Stock Cost</string>
+    <string name="label_potential_revenue">Potential Rev.</string>
+    <string name="label_low_stock_desc">The following items are running low and may need restocking soon.</string>
+    <string name="label_left_all_caps">LEFT</string>
+    <string name="label_all_stocked_title">All items are well stocked!</string>
+    <string name="label_all_stocked_desc">Your inventory is in good shape.</string>
+    <string name="btn_ok">OK</string>
     <!-- Time Filters -->
     <string name="filter_today">Today</string>
     <string name="filter_week">Week</string>
@@ -193,6 +225,8 @@
 
     <!-- Help & Support -->
     <string name="title_help_support">Help &amp; Support</string>
+    <string name="visit_github">Visit Developer GitHub</string>
+    <string name="github_url">https://github.com/tatakae-B</string>
     <string name="support_email">Email Support</string>
     <string name="support_email_desc">For app support, bug reports, or suggestions, contact us at:\n\ncontactbdriii@gmail.com</string>
     <string name="app_guide">App Guide</string>
@@ -318,6 +352,18 @@
     <string name="cat_home_short">Home decor</string>
     <string name="cat_eco">Eco-Friendly Products</string>
     <string name="cat_eco_short">Eco products</string>
-    <string name="cat_misc">Miscellaneous:-</string>
+    <string name="cat_misc">Miscellaneous</string>
     <string name="cat_misc_short">Toys &amp; gifts</string>
+
+    <!-- Analytics Dashboard Redesign -->
+    <string name="title_sales_dashboard">Sales Dashboard</string>
+    <string name="label_sales_heatmap">Sales Activity Heatmap</string>
+    <string name="label_current_streak">Current Streak</string>
+    <string name="label_best_streak">Best Streak</string>
+    <string name="label_active_days">Active Selling Days</string>
+    <string name="label_perf_score">Performance Score</string>
+    <string name="label_days">days</string>
+    <string name="tooltip_heatmap">Intensity represents items sold on that day</string>
+    <string name="label_monthly_summary">%1$s Summary</string>
+    <string name="label_no_sales_month">No sales recorded for this month</string>
 </resources>

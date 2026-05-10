@@ -148,7 +148,7 @@ fun SettingsScreen(
                             confirmPin = ""
                             pinError = null
                         },
-                        title = { Text(if (isConfirming) "Confirm 4-Digit PIN" else if (appLock) "Change PIN" else "Set 4-Digit PIN") },
+                        title = { Text(if (isConfirming) stringResource(R.string.label_pin_setup) else if (appLock) stringResource(R.string.label_pin_setup) else stringResource(R.string.label_pin_setup)) },
                         text = {
                             Column {
                                 Text(
@@ -198,7 +198,7 @@ fun SettingsScreen(
                                         }
                                     }
                                 }
-                            ) { Text(if (isConfirming) "Confirm" else "Next") }
+                            ) { Text(if (isConfirming) stringResource(R.string.btn_continue) else stringResource(R.string.btn_continue)) }
                         },
                         dismissButton = {
                             TextButton(onClick = { 
@@ -363,20 +363,13 @@ fun SettingsScreen(
                     }
                     Text(
                         text = stringResource(R.string.footer_version),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.footer_designed_developed),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     )
                     Text(
-                        text = stringResource(R.string.footer_developer_name),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
+                        text = "${stringResource(R.string.footer_designed_developed)} ${stringResource(R.string.footer_developer_name)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))

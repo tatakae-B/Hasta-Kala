@@ -26,6 +26,20 @@ data class SaleRecord(
     val costPrice: Double,
     val unitPrice: Double,
     val subtotal: Double,
+    val paymentMethod: String = "Cash",
+    val customerName: String = "",
+    val customerContact: String = "",
+    val notes: String = "",
+    val timestamp: Long = System.currentTimeMillis(),
+    val lastModified: Long = System.currentTimeMillis()
+)
+
+@Entity(tableName = "expenses")
+data class Expense(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val category: String,
+    val amount: Double,
+    val notes: String,
     val timestamp: Long = System.currentTimeMillis()
 )
 

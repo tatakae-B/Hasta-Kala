@@ -5,9 +5,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivityResultRegistryOwner
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,18 +30,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import androidx.activity.compose.BackHandler
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hastakala.shop.data.Product
-import com.hastakala.shop.data.UserProfile
 import com.hastakala.shop.ui.DashboardScreen
 import com.hastakala.shop.ui.LowStockScreen
 import com.hastakala.shop.ui.ProductAddScreen
@@ -57,8 +50,6 @@ import com.hastakala.shop.ui.SplashScreen
 import com.hastakala.shop.ui.WelcomeScreen
 import com.hastakala.shop.ui.theme.MyApplicationTheme
 import com.hastakala.shop.ui.components.ExportBottomSheet
-import com.hastakala.shop.utils.ExportType
-import com.hastakala.shop.utils.ExportFormat
 import com.hastakala.shop.utils.ExportManager
 import com.hastakala.shop.utils.StockNotificationHelper
 import com.hastakala.shop.viewmodel.ShopViewModel
@@ -68,8 +59,10 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
-import androidx.fragment.app.FragmentActivity
 import com.hastakala.shop.utils.BiometricHelper
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 @AndroidEntryPoint
 class MainActivity : androidx.appcompat.app.AppCompatActivity() {
@@ -396,8 +389,6 @@ fun HastaKalaApp(
     val revenue by vm.revenue.collectAsState()
     val profit by vm.profit.collectAsState()
 
-    val onLogoutClick = onLogout
-
     val filter by vm.selectedFilter.collectAsState()
     val selectedCategory by vm.selectedCategory.collectAsState()
     val topProducts by vm.topProducts.collectAsState()
@@ -465,6 +456,7 @@ fun HastaKalaApp(
         Triple(stringResource(R.string.nav_products), Icons.Default.Inventory, "Inventory"),
         Triple(stringResource(R.string.nav_add_product), Icons.Default.AddBox, "Add New Product"),
         Triple(stringResource(R.string.nav_sales), Icons.Default.AddShoppingCart, "Add Sale"),
+        Triple(stringResource(R.string.nav_analytics), Icons.Default.BarChart, "Analytics"),
         Triple(stringResource(R.string.nav_profile), Icons.Default.Person, "User Profile")
     )
 
@@ -483,11 +475,12 @@ fun HastaKalaApp(
                 HorizontalDivider()
                 navItems.forEachIndexed { idx, (label, icon, _) ->
                     val isSelected = when (idx) {
-                        0 -> selectedTab == 0 && !isAddingProduct && !isShowingProfile && !isShowingSettings
-                        1 -> selectedTab == 1 && !isAddingProduct && !isShowingProfile && !isShowingSettings
+                        0 -> selectedTab == 0 && !isAddingProduct && !isShowingProfile && !isShowingSettings && !isShowingSalesAnalytics
+                        1 -> selectedTab == 1 && !isAddingProduct && !isShowingProfile && !isShowingSettings && !isShowingSalesAnalytics
                         2 -> isAddingProduct
-                        3 -> selectedTab == 2 && !isAddingProduct && !isShowingProfile && !isShowingSettings
-                        4 -> isShowingProfile
+                        3 -> selectedTab == 2 && !isAddingProduct && !isShowingProfile && !isShowingSettings && !isShowingSalesAnalytics
+                        4 -> isShowingSalesAnalytics
+                        5 -> isShowingProfile
                         else -> false
                     }
                     NavigationDrawerItem(
@@ -498,15 +491,19 @@ fun HastaKalaApp(
                             isShowingProfile = false
                             isShowingSettings = false
                             isAddingProduct = false
+                            isShowingSalesAnalytics = false
                             when (idx) {
                                 0 -> selectedTab = 0
                                 1 -> selectedTab = 1
                                 2 -> {
                                     selectedTab = 1
                                     isAddingProduct = true
+                                    isShowingSalesAnalytics = false
+                                    isShowingProfile = false
                                 }
                                 3 -> selectedTab = 2
-                                4 -> isShowingProfile = true
+                                4 -> isShowingSalesAnalytics = true
+                                5 -> isShowingProfile = true
                             }
                         },
                         icon = { Icon(icon, contentDescription = null) },
@@ -534,10 +531,10 @@ fun HastaKalaApp(
                     onClick = {
                         scope.launch {
                             drawerState.close()
-                            onLogoutClick()
+                            onLogout()
                         }
                     },
-                    icon = { Icon(Icons.Default.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -637,7 +634,7 @@ fun HastaKalaApp(
                     LowStockScreen(
                         products = products,
                         onNavigateBack = { isShowingLowStock = false },
-                        onEditProduct = { product ->
+                        onEditProduct = { _ ->
                             isShowingLowStock = false
                             selectedTab = 1
                             // Note: In a real app we'd trigger the edit dialog here.
@@ -646,6 +643,13 @@ fun HastaKalaApp(
                 } else if (isShowingSalesAnalytics) {
                     SalesAnalyticsScreen(
                         sales = vm.sales.collectAsState(initial = emptyList()).value,
+                        heatmapData = vm.heatmapData.collectAsState().value,
+                        currentStreak = vm.currentStreak.collectAsState().value,
+                        bestStreak = vm.bestStreak.collectAsState().value,
+                        activeDays = vm.activeDays.collectAsState().value,
+                        performanceScore = vm.performanceScore.collectAsState().value,
+                        onEditSale = vm::updateSale,
+                        onDeleteSale = vm::deleteSale,
                         onNavigateBack = { isShowingSalesAnalytics = false }
                     )
                 } else if (isShowingProfitInsights) {
@@ -737,7 +741,9 @@ fun HastaKalaApp(
                         2 -> {
                             SalesEntryScreen(
                                 products = products,
-                                onBill = vm::recordSale,
+                                onBill = { p, qty, pm, name, notes ->
+                                    vm.recordSale(p, qty, pm, name, notes)
+                                },
                                 vm = vm
                             )
                         }
@@ -759,11 +765,10 @@ fun ProfileScreen(
     val scope = rememberCoroutineScope()
     val userProfile by viewModel.userProfile.collectAsState()
     val topProducts by viewModel.topProducts.collectAsState()
-    val revenue by viewModel.revenue.collectAsState()
     val sales by viewModel.sales.collectAsState()
-    val filteredSales by viewModel.filteredSales.collectAsState()
 
     val products by viewModel.products.collectAsState()
+    val expenses by viewModel.expenses.collectAsState()
 
     var showExportSheet by remember { mutableStateOf(false) }
     var showBackupDialog by remember { mutableStateOf(false) }
@@ -784,22 +789,29 @@ fun ProfileScreen(
     if (showExportSheet) {
         ExportBottomSheet(
             onDismiss = { showExportSheet = false },
-            onExportRequested = { type, format, start, end ->
+            onExportRequested = { type, format, timeRange, start, end ->
                 scope.launch {
-                    val path = ExportManager.generateExport(
-                        context, 
-                        type, 
-                        format, 
-                        sales, 
-                        products, 
-                        start, 
-                        end,
-                        userProfile
-                    )
-                    if (path != null) {
-                        ExportManager.shareFile(context, path)
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.export_no_data), Toast.LENGTH_SHORT).show()
+                    try {
+                        val path = ExportManager.generateExport(
+                            context, 
+                            type, 
+                            format, 
+                            timeRange,
+                            sales, 
+                            products, 
+                            expenses,
+                            start, 
+                            end,
+                            userProfile
+                        )
+                        if (path != null) {
+                            ExportManager.shareFile(context, path)
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.export_no_data), Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(context, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                     showExportSheet = false
                 }
@@ -837,12 +849,58 @@ fun ProfileScreen(
         var shopName by remember { mutableStateOf(userProfile?.shopName ?: "") }
         var contact by remember { mutableStateOf(userProfile?.contact ?: "") }
         var location by remember { mutableStateOf(userProfile?.location ?: "") }
+        var selectedImageUri by remember { mutableStateOf<android.net.Uri?>(null) }
+        
+        val photoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri ->
+            selectedImageUri = uri
+        }
 
         AlertDialog(
             onDismissRequest = { showEditProfile = false },
             title = { Text(stringResource(R.string.title_edit_profile_screen)) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .clickable { photoPickerLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (selectedImageUri != null || userProfile?.profileImageUrl?.isNotEmpty() == true) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(context)
+                                    .data(selectedImageUri ?: userProfile?.profileImageUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Profile Image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.AddAPhoto,
+                                contentDescription = "Add Photo",
+                                modifier = Modifier.size(40.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    
+                    Text(
+                        text = "Tap to change photo",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.hint_artisan_name)) }, shape = RoundedCornerShape(12.dp))
                     OutlinedTextField(value = shopName, onValueChange = { shopName = it }, label = { Text(stringResource(R.string.hint_shop_name)) }, shape = RoundedCornerShape(12.dp))
                     OutlinedTextField(value = contact, onValueChange = { contact = it }, label = { Text(stringResource(R.string.hint_phone)) }, shape = RoundedCornerShape(12.dp))
@@ -852,7 +910,7 @@ fun ProfileScreen(
             confirmButton = {
                 Button(onClick = {
                     if (name.isNotBlank() && shopName.isNotBlank()) {
-                        viewModel.updateUserProfile(name, shopName, contact, location)
+                        viewModel.updateUserProfile(name, shopName, contact, location, selectedImageUri?.toString())
                         Toast.makeText(context, R.string.profile_updated, Toast.LENGTH_SHORT).show()
                         showEditProfile = false
                     }
@@ -865,6 +923,7 @@ fun ProfileScreen(
     }
 
     if (showHelpSupport) {
+        val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
         AlertDialog(
             onDismissRequest = { 
                 showHelpSupport = false 
@@ -887,6 +946,11 @@ fun ProfileScreen(
                             HelpItem(Icons.Default.Email, stringResource(R.string.support_email)) { helpScreenType = 1 }
                             HelpItem(Icons.AutoMirrored.Filled.MenuBook, stringResource(R.string.app_guide)) { helpScreenType = 2 }
                             HelpItem(Icons.Default.BugReport, stringResource(R.string.report_problem)) { helpScreenType = 3 }
+                            
+                            val githubUrl = stringResource(R.string.github_url)
+                            HelpItem(Icons.Default.Code, stringResource(R.string.visit_github)) {
+                                uriHandler.openUri(githubUrl)
+                            }
                         }
                         1 -> {
                             Text(stringResource(R.string.support_email_desc))
@@ -932,7 +996,7 @@ fun ProfileScreen(
                     Button(onClick = {
                         if (helpScreenType == 1 || helpScreenType == 3) {
                             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                data = android.net.Uri.parse("mailto:")
+                                data = "mailto:".toUri()
                                 putExtra(Intent.EXTRA_EMAIL, arrayOf("contactbdriii@gmail.com"))
                                 if (helpScreenType == 3) {
                                     putExtra(Intent.EXTRA_SUBJECT, "App Report: Hasta-Kala Shop")
@@ -946,6 +1010,7 @@ fun ProfileScreen(
                                     Toast.makeText(context, R.string.report_success, Toast.LENGTH_LONG).show()
                                 }
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -1020,12 +1085,24 @@ fun ProfileScreen(
                             .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Default.AccountCircle,
-                            contentDescription = null,
-                            modifier = Modifier.size(60.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        if (userProfile?.profileImageUrl?.isNotEmpty() == true) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(context)
+                                    .data(userProfile?.profileImageUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Profile Image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(60.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
@@ -1122,7 +1199,7 @@ fun ProfileScreen(
         item {
             ProfileSectionHeader(stringResource(R.string.section_support))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                ProfileActionButton(Icons.Default.HelpOutline, stringResource(R.string.action_help_support), onClick = { showHelpSupport = true })
+                ProfileActionButton(Icons.AutoMirrored.Filled.HelpOutline, stringResource(R.string.action_help_support), onClick = { showHelpSupport = true })
                 ProfileActionButton(Icons.Default.Info, stringResource(R.string.action_about_app), onClick = { showAboutApp = true })
                 
                 Row(
@@ -1151,7 +1228,7 @@ fun ProfileScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 ProfileActionButton(Icons.Default.Settings, stringResource(R.string.action_settings), onClick = onNavigateToSettings)
                 ProfileActionButton(
-                    Icons.Default.Logout, 
+                    Icons.AutoMirrored.Filled.Logout,
                     stringResource(R.string.logout), 
                     tint = MaterialTheme.colorScheme.error,
                     onClick = onLogout
@@ -1199,7 +1276,7 @@ fun SummaryCard(title: String, value: String, modifier: Modifier = Modifier) {
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
@@ -1209,7 +1286,7 @@ fun SummaryCard(title: String, value: String, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
@@ -1230,7 +1307,7 @@ fun ProfileSectionHeader(title: String) {
 
 @Composable
 fun ProfileActionButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     label: String,
     tint: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit = {}

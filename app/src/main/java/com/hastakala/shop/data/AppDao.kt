@@ -25,6 +25,18 @@ interface AppDao {
     @Insert
     suspend fun insertSale(saleRecord: SaleRecord)
 
+    @Insert
+    suspend fun insertExpense(expense: Expense)
+
+    @Query("SELECT * FROM expenses WHERE timestamp >= :fromTime ORDER BY timestamp DESC")
+    fun observeExpenses(fromTime: Long): Flow<List<Expense>>
+
+    @Query("SELECT * FROM expenses WHERE timestamp BETWEEN :startTime AND :endTime ORDER BY timestamp DESC")
+    suspend fun getExpensesInRange(startTime: Long, endTime: Long): List<Expense>
+
+    @Query("SELECT * FROM sales WHERE timestamp BETWEEN :startTime AND :endTime ORDER BY timestamp DESC")
+    suspend fun getSalesInRange(startTime: Long, endTime: Long): List<SaleRecord>
+
     @Query("SELECT * FROM sales ORDER BY timestamp DESC")
     fun observeSales(): Flow<List<SaleRecord>>
 
@@ -68,8 +80,42 @@ interface AppDao {
         deleteAllSales()
     }
 
+    @Update
+    suspend fun updateSale(saleRecord: SaleRecord)
+
+    @Query("DELETE FROM sales WHERE id = :saleId")
+    suspend fun deleteSale(saleId: Long)
+
+    @Query("SELECT * FROM products WHERE id = :productId")
+    suspend fun getProductById(productId: Int): Product?
+
+    @Query("SELECT * FROM sales WHERE id = :saleId")
+    suspend fun getSaleById(saleId: Long): SaleRecord?
+
     @Transaction
-    suspend fun recordSaleAndUpdateStock(product: Product, quantity: Int) {
+    suspend fun updateSaleAndUpdateStock(updatedSale: SaleRecord) {
+        val oldSale = getSaleById(updatedSale.id) ?: return
+        val product = getProductById(updatedSale.productId) ?: return
+        
+        // Restore old stock, then apply new quantity
+        val restoredStock = product.stock + oldSale.quantity
+        val finalStock = (restoredStock - updatedSale.quantity).coerceAtLeast(0)
+        
+        updateProduct(product.copy(stock = finalStock))
+        updateSale(updatedSale)
+    }
+
+    @Transaction
+    suspend fun deleteSaleAndRestoreStock(saleId: Long) {
+        val sale = getSaleById(saleId) ?: return
+        val product = getProductById(sale.productId) ?: return
+        
+        updateProduct(product.copy(stock = product.stock + sale.quantity))
+        deleteSale(saleId)
+    }
+
+    @Transaction
+    suspend fun recordSaleAndUpdateStock(product: Product, quantity: Int, paymentMethod: String = "Cash", customerName: String = "", notes: String = "") {
         val finalQty = quantity.coerceAtLeast(1)
         val subtotal = product.sellingPrice * finalQty
         insertSale(
@@ -81,7 +127,10 @@ interface AppDao {
                 quantity = finalQty,
                 costPrice = product.costPrice,
                 unitPrice = product.sellingPrice,
-                subtotal = subtotal
+                subtotal = subtotal,
+                paymentMethod = paymentMethod,
+                customerName = customerName,
+                notes = notes
             )
         )
         updateProduct(product.copy(stock = (product.stock - finalQty).coerceAtLeast(0)))

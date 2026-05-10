@@ -72,6 +72,9 @@ class ShopViewModel @Inject constructor(
     val sales: StateFlow<List<SaleRecord>> = repository.observeSales()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val expenses: StateFlow<List<com.hastakala.shop.data.Expense>> = repository.observeExpenses(0L)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     private val _selectedFilter = MutableStateFlow(TimeFilter.WEEK)
     val selectedFilter = _selectedFilter.asStateFlow()
 
@@ -92,6 +95,21 @@ class ShopViewModel @Inject constructor(
 
     private val _profit = MutableStateFlow(0.0)
     val profit = _profit.asStateFlow()
+
+    private val _heatmapData = MutableStateFlow<Map<Long, Double>>(emptyMap())
+    val heatmapData = _heatmapData.asStateFlow()
+
+    private val _currentStreak = MutableStateFlow(0)
+    val currentStreak = _currentStreak.asStateFlow()
+
+    private val _bestStreak = MutableStateFlow(0)
+    val bestStreak = _bestStreak.asStateFlow()
+
+    private val _activeDays = MutableStateFlow(0)
+    val activeDays = _activeDays.asStateFlow()
+
+    private val _performanceScore = MutableStateFlow(0.0)
+    val performanceScore = _performanceScore.asStateFlow()
 
     private val _filteredSales = MutableStateFlow<List<SaleRecord>>(emptyList())
     val filteredSales = _filteredSales.asStateFlow()
@@ -191,13 +209,27 @@ class ShopViewModel @Inject constructor(
         }
     }
 
-    fun recordSale(product: Product, quantityText: String) {
+    fun recordSale(product: Product, quantityText: String, paymentMethod: String = "Cash", customerName: String = "", notes: String = "") {
         val qty = quantityText.toIntOrNull() ?: return
         if (qty <= 0 || product.stock <= 0) return
         viewModelScope.launch {
-            repository.recordSale(product, qty.coerceAtMost(product.stock))
+            repository.recordSale(product, qty.coerceAtMost(product.stock), paymentMethod, customerName, notes)
             refreshAnalytics()
             _saleSuccess.emit(true)
+        }
+    }
+
+    fun updateSale(sale: SaleRecord) {
+        viewModelScope.launch {
+            repository.updateSale(sale)
+            refreshAnalytics()
+        }
+    }
+
+    fun deleteSale(saleId: Long) {
+        viewModelScope.launch {
+            repository.deleteSale(saleId)
+            refreshAnalytics()
         }
     }
 
@@ -250,7 +282,69 @@ class ShopViewModel @Inject constructor(
             }.filter { it.product.stock > 0 } // Only consider products currently in stock
              .sortedWith(compareBy({ it.totalSold }, { it.revenue }))
              .take(10) // Focus on the top 10 bottlenecks
+
+            // GitHub-style Heatmap Data & Streaks
+            val allSales = sales.value
+            val dailyMap = allSales.groupBy { 
+                val cal = java.util.Calendar.getInstance().apply { timeInMillis = it.timestamp }
+                cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+                cal.set(java.util.Calendar.MINUTE, 0)
+                cal.set(java.util.Calendar.SECOND, 0)
+                cal.set(java.util.Calendar.MILLISECOND, 0)
+                cal.timeInMillis
+            }.mapValues { it.value.sumOf { s -> s.subtotal } }
+            _heatmapData.value = dailyMap
+
+            calculateStreaks(dailyMap)
+            _activeDays.value = dailyMap.size
+            
+            // Basic Performance Score (0-100)
+            val avgDaily = if (dailyMap.isNotEmpty()) filtered.sumOf { it.subtotal } / 30.0 else 0.0
+            _performanceScore.value = (avgDaily / 5000.0 * 100.0).coerceIn(0.0, 100.0)
         }
+    }
+
+    private fun calculateStreaks(dailyMap: Map<Long, Double>) {
+        val sortedDates = dailyMap.keys.sortedDescending()
+        if (sortedDates.isEmpty()) {
+            _currentStreak.value = 0
+            _bestStreak.value = 0
+            return
+        }
+
+        val today = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+
+        var current = 0
+        var tempToday = today
+        while (dailyMap.containsKey(tempToday)) {
+            current++
+            tempToday -= DAY_MILLIS
+        }
+        _currentStreak.value = current
+
+        var best = 0
+        var running = 0
+        val allDaysSorted = dailyMap.keys.sorted()
+        if (allDaysSorted.isNotEmpty()) {
+            var lastDay = allDaysSorted.first()
+            running = 1
+            best = 1
+            for (i in 1 until allDaysSorted.size) {
+                if (allDaysSorted[i] == lastDay + DAY_MILLIS) {
+                    running++
+                } else {
+                    running = 1
+                }
+                best = maxOf(best, running)
+                lastDay = allDaysSorted[i]
+            }
+        }
+        _bestStreak.value = best
     }
 
     fun createCsv(): String {
@@ -276,14 +370,16 @@ class ShopViewModel @Inject constructor(
         }
     }
 
-    fun updateUserProfile(fullName: String, shopName: String, contact: String, location: String) {
+    fun updateUserProfile(fullName: String, shopName: String, contact: String, location: String, profileImageUrl: String? = null) {
         val uid = repository.getUserId() ?: return
+        val currentProfile = _userProfile.value
         val newProfile = com.hastakala.shop.data.UserProfile(
             uid = uid,
             fullName = fullName,
             shopName = shopName,
             contact = contact,
-            location = location
+            location = location,
+            profileImageUrl = profileImageUrl ?: currentProfile?.profileImageUrl ?: ""
         )
         viewModelScope.launch {
             repository.saveUserProfile(newProfile)

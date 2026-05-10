@@ -104,7 +104,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 Box(contentAlignment = Alignment.Center) {
                     Image(
                         painter = painterResource(id = R.drawable.logo),
-                        contentDescription = "HASTA KALA Logo",
+                        contentDescription = stringResource(R.string.app_name),
                         modifier = Modifier.size(90.dp),
                         contentScale = ContentScale.Fit
                     )
@@ -114,7 +114,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
             Spacer(modifier = Modifier.height(40.dp))
             
             Text(
-                text = "HASTA KALA",
+                text = stringResource(R.string.app_name).uppercase(),
                 style = MaterialTheme.typography.displaySmall.copy(
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = 8.sp,
@@ -314,7 +314,7 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "HASTA KALA",
+                    text = stringResource(R.string.app_name).uppercase(),
                     style = MaterialTheme.typography.displayMedium.copy(
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 8.sp,
@@ -325,7 +325,7 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "EMPOWERING ARTISANS DIGITALLY",
+                    text = stringResource(R.string.empowering_artisans),
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 4.sp,
@@ -345,7 +345,7 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Where tradition meets technology",
+                    text = stringResource(R.string.welcome_desc),
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Light,
                         textAlign = TextAlign.Center,
@@ -396,7 +396,7 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "GET STARTED".uppercase(),
+                                text = stringResource(R.string.btn_get_started).uppercase(),
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.ExtraBold,
                                     letterSpacing = 2.sp
@@ -422,7 +422,7 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = "v1.0.0 • Developed by Bdriii",
+                    text = stringResource(R.string.credit_powered_by_full),
                     style = MaterialTheme.typography.labelMedium,
                     color = ArtisanWarmBlack.copy(alpha = 0.4f)
                 )
@@ -701,7 +701,7 @@ fun ArtisanLoginScreen(
                                                 IconButton(onClick = { onOtpSentChange(false) }) {
                                                     Icon(
                                                         Icons.Default.Edit,
-                                                        "Edit Phone Number",
+                                                        stringResource(R.string.edit_phone_number),
                                                         tint = TerracottaPrimary,
                                                         modifier = Modifier.size(20.dp)
                                                     )
@@ -734,7 +734,7 @@ fun ArtisanLoginScreen(
                                             ),
                                             placeholder = {
                                                 Text(
-                                                    "ENTER 6-DIGIT OTP",
+                                                    stringResource(R.string.enter_otp).uppercase(),
                                                     modifier = Modifier.fillMaxWidth(),
                                                     textAlign = TextAlign.Center,
                                                     style = MaterialTheme.typography.labelMedium,
@@ -754,7 +754,7 @@ fun ArtisanLoginScreen(
                                         )
 
                                         Text(
-                                            text = "Didn't receive OTP? Resend in 00:30",
+                                            text = stringResource(R.string.resend_otp),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = ArtisanWarmBlack.copy(alpha = 0.5f),
                                             modifier = Modifier
@@ -776,7 +776,7 @@ fun ArtisanLoginScreen(
                                                     IconButton(onClick = { isPasswordStage = false }) {
                                                         Icon(
                                                             Icons.Default.Edit,
-                                                            "Edit Email",
+                                                            stringResource(R.string.edit_phone_number),
                                                             tint = TerracottaPrimary,
                                                             modifier = Modifier.size(20.dp)
                                                         )
@@ -798,7 +798,7 @@ fun ArtisanLoginScreen(
                                                         IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                                                             Icon(
                                                                 imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password",
+                                                                contentDescription = null,
                                                                 tint = TerracottaPrimary.copy(alpha = 0.6f),
                                                                 modifier = Modifier.size(20.dp)
                                                             )
@@ -982,7 +982,7 @@ fun ArtisanLoginScreen(
                     )
                     FeatureSmallCard(
                         icon = Icons.Default.Brush,
-                        text = "ARTISAN",
+                        text = stringResource(R.string.feature_made_for_artisans),
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -1085,7 +1085,7 @@ fun ArtisanRegistrationScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "CREATE ACCOUNT",
+                        text = stringResource(R.string.create_account).uppercase(),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = 2.sp
@@ -1107,14 +1107,14 @@ fun ArtisanRegistrationScreen(
                         ArtisanTextField(
                             value = name,
                             onValueChange = { name = it },
-                            placeholder = "Full Name",
+                            placeholder = stringResource(R.string.hint_artisan_name),
                             leadingIcon = Icons.Default.Person
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         ArtisanTextField(
                             value = email,
                             onValueChange = { email = it },
-                            placeholder = "Email Address",
+                            placeholder = stringResource(R.string.hint_email),
                             leadingIcon = Icons.Default.Email,
                             keyboardType = KeyboardType.Email
                         )
@@ -1122,7 +1122,7 @@ fun ArtisanRegistrationScreen(
                         ArtisanTextField(
                             value = phone,
                             onValueChange = { phone = it },
-                            placeholder = "Mobile Number",
+                            placeholder = stringResource(R.string.placeholder_mobile),
                             leadingIcon = Icons.Default.Phone,
                             keyboardType = KeyboardType.Phone
                         )

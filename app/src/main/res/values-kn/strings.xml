@@ -4,6 +4,7 @@
     <string name="nav_products">ಉತ್ಪನ್ನಗಳು</string>
     <string name="nav_add_product">ಉತ್ಪನ್ನ ಸೇರಿಸಿ</string>
     <string name="nav_sales">ಮಾರಾಟ</string>
+    <string name="nav_analytics">ಅನಾಲಿಟಿಕ್ಸ್</string>
     <string name="nav_profile">ಪ್ರೊಫೈಲ್</string>
     <string name="logout">ಲಾಗ್ ಔಟ್</string>
     <string name="menu_title">ಹಸ್ತ ಕಲಾ ಮೆನು</string>
@@ -46,6 +47,51 @@
     <string name="otp_sent">OTP ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ</string>
     <string name="resend_otp">OTP ಮತ್ತೆ ಕಳುಹಿಸಿ</string>
     <string name="invalid_phone">ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</string>
-
     <string name="btn_close">ಮುಚ್ಚಿ</string>
+
+    <!-- Profile Setup -->
+    <string name="hint_artisan_name">ಕುಶಲಕರ್ಮಿ ಹೆಸರು</string>
+    <string name="hint_shop_name">ಅಂಗಡಿಯ ಹೆಸರು</string>
+    <string name="hint_email">ಇಮೇಲ್ ವಿಳಾಸ</string>
+    <string name="hint_phone">ಫೋನ್ ಸಂಖ್ಯೆ</string>
+    <string name="hint_location">ಸ್ಥಳ</string>
+    <string name="profile_updated">ಪ್ರೊಫೈಲ್ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ!</string>
+
+    <!-- Dashboard -->
+    <string name="stat_total_sales">ಒಟ್ಟು ಮಾರಾಟ</string>
+    <string name="stat_total_products">ಒಟ್ಟು ಉತ್ಪನ್ನಗಳು</string>
+    <string name="stat_low_stock">ಕಡಿಮೆ ಸ್ಟಾಕ್</string>
+    <string name="stat_profit">ಲಾಭ</string>
+    <string name="label_sales_summary">ಮಾರಾಟದ ಸಾರಾಂಶ</string>
+    <string name="label_top_products">ಉನ್ನತ ಉತ್ಪನ್ನಗಳು</string>
+
+    <!-- Product Management -->
+    <string name="title_add_product">ಹೊಸ ಉತ್ಪನ್ನ ಸೇರಿಸಿ</string>
+    <string name="hint_product_name">ಉತ್ಪನ್ನದ ಹೆಸರು</string>
+    <string name="hint_color_variant">ಬಣ್ಣ / ರೂಪಾಂತರ</string>
+    <string name="hint_cost_price">ಖರೀದಿ ಬೆಲೆ</string>
+    <string name="hint_selling_price">ಮಾರಾಟದ ಬೆಲೆ</string>
+    <string name="hint_initial_stock">ಆರಂಭಿಕ ಸ್ಟಾಕ್</string>
+    <string name="btn_save_product">ಉತ್ಪನ್ನ ಉಳಿಸಿ</string>
+    <string name="btn_update">ನವೀಕರಿಸಿ</string>
+    <string name="btn_cancel">ರದ್ದುಮಾಡಿ</string>
+
+    <!-- Categories -->
+    <string name="label_categories">ವರ್ಗಗಳು</string>
+    <string name="cat_pottery">ಕುಂಬಾರಿಕೆ ಮತ್ತು ಮಣ್ಣಿನ ಕಲೆ</string>
+    <string name="cat_textile">ಜವಳಿ ಮತ್ತು ಕೈಮಗ್ಗ</string>
+    <string name="cat_jewellery">ಆಭರಣಗಳು</string>
+    <string name="cat_wood">ಮರ ಮತ್ತು ಬಿದಿರು</string>
+    <string name="cat_art">ಕಲೆ ಮತ್ತು ಚಿತ್ರಕಲೆ</string>
+    <string name="cat_home">ಮನೆ ಅಲಂಕಾರಿಕ</string>
+    <string name="cat_eco">ಪರಿಸರ ಸ್ನೇಹಿ ಉತ್ಪನ್ನಗಳು</string>
+    <string name="cat_misc">ಇತರ ವಿಷಯಗಳು</string>
+
+    <!-- Security -->
+    <string name="section_security">ಭದ್ರತೆ</string>
+    <string name="label_app_lock">ಆಪ್ ಲಾಕ್</string>
+    <string name="label_fingerprint">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್‌ಲಾಕ್</string>
+    <string name="auth_title">ಆಪ್ ಲಾಕ್</string>
+    <string name="auth_subtitle">ಹಸ್ತ-ಕಲಾ ಶಾಪ್ ಪ್ರವೇಶಿಸಲು ದೃಢೀಕರಿಸಿ</string>
+    <string name="btn_unlock_app">ಆಪ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
 </resources>

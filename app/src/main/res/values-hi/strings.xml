@@ -4,6 +4,7 @@
     <string name="nav_products">उत्पाद</string>
     <string name="nav_add_product">उत्पाद जोड़ें</string>
     <string name="nav_sales">बिक्री</string>
+    <string name="nav_analytics">एनालिटिक्स</string>
     <string name="nav_profile">प्रोफ़ाइल</string>
     <string name="logout">लॉग आउट</string>
     <string name="menu_title">हस्त कला मेनू</string>
@@ -47,9 +48,50 @@
     <string name="resend_otp">ओटीपी पुन: भेजें</string>
     <string name="invalid_phone">कृपया एक वैध फ़ोन नंबर दर्ज करें</string>
 
+    <!-- Profile Setup -->
+    <string name="hint_artisan_name">कारीगर का नाम</string>
+    <string name="hint_shop_name">दुकान का नाम</string>
+    <string name="hint_email">ईमेल पता</string>
+    <string name="hint_phone">फ़ोन नंबर</string>
+    <string name="hint_location">स्थान</string>
+    <string name="profile_updated">प्रोफ़ाइल सफलतापूर्वक अपडेट की गई!</string>
+
+    <!-- Dashboard -->
+    <string name="stat_total_sales">कुल बिक्री</string>
+    <string name="stat_total_products">कुल उत्पाद</string>
+    <string name="stat_low_stock">कम स्टॉक</string>
+    <string name="stat_profit">लाभ</string>
+    <string name="label_sales_summary">बिक्री सारांश</string>
+    <string name="label_top_products">शीर्ष उत्पाद</string>
+
+    <!-- Product Management -->
+    <string name="title_add_product">नया उत्पाद जोड़ें</string>
+    <string name="hint_product_name">उत्पाद का नाम</string>
+    <string name="hint_color_variant">रंग / संस्करण</string>
+    <string name="hint_cost_price">लागत मूल्य</string>
+    <string name="hint_selling_price">बिक्री मूल्य</string>
+    <string name="hint_initial_stock">प्रारंभिक स्टॉक</string>
+    <string name="btn_save_product">उत्पाद सहेजें</string>
+    <string name="btn_update">अपडेट करें</string>
+    <string name="btn_cancel">रद्द करें</string>
+
+    <!-- Categories -->
+    <string name="label_categories">श्रेणियाँ</string>
+    <string name="cat_pottery">मिट्टी के बर्तन</string>
+    <string name="cat_textile">कपड़ा और हथकरघा</string>
+    <string name="cat_jewellery">आभूषण</string>
+    <string name="cat_wood">लकड़ी और बांस</string>
+    <string name="cat_art">कला और पेंटिंग</string>
+    <string name="cat_home">होम डेकोर</string>
+    <string name="cat_eco">इको-फ्रेंडली उत्पाद</string>
+    <string name="cat_misc">विविध</string>
+
+    <!-- Security -->
+    <string name="section_security">सुरक्षा</string>
+    <string name="label_app_lock">ऐप लॉक</string>
+    <string name="label_fingerprint">फिंगरप्रिंट अनलॉक</string>
     <string name="auth_title">ऐप लॉक</string>
-    <string name="auth_subtitle">अपनी दुकान का डेटा सुरक्षित करें</string>
-    <string name="auth_setup_confirm">क्या आप इस ऐप के लिए बायोमेट्रिक लॉक सक्षम करना चाहते हैं?</string>
+    <string name="auth_subtitle">हस्त-कला शॉप तक पहुँचने के लिए प्रमाणित करें</string>
     <string name="btn_unlock_app">ऐप अनलॉक करें</string>
     <string name="btn_close">बंद करें</string>
     <string name="credit_app_version">वर्जन 1.0.0 • हस्त-कला शॉप</string>

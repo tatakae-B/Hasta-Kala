@@ -1,7 +1,7 @@
 package com.hastakala.shop.data.ai
 
+import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.RequestOptions
 import com.google.ai.client.generativeai.type.content
 import com.hastakala.shop.BuildConfig
 import com.hastakala.shop.data.ShopRepository
@@ -16,24 +16,17 @@ class AIRepository @Inject constructor(
     private val shopRepository: ShopRepository,
     private val contextBuilder: AIContextBuilder
 ) {
-    init {
-        android.util.Log.d("GeminiDebug", "AIRepository initialized")
-    }
-
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash",
-        apiKey = "" // TODO: Add your Gemini API Key here
+        modelName = "gemini-2.0-flash",
+        apiKey = BuildConfig.GEMINI_API_KEY
     )
 
     suspend fun getBusinessResponse(userMessage: String, language: String): Result<String> = withContext(Dispatchers.IO) {
-        val apiKey = "" // TODO: Use BuildConfig or secure way for production
-        if (apiKey.isBlank()) {
-            // For now, return a placeholder or handle the error gracefully
-            return@withContext Result.failure(Exception("Gemini API Key is not configured. Please add it to BuildConfig or local.properties."))
+        if (BuildConfig.GEMINI_API_KEY.isBlank() || BuildConfig.GEMINI_API_KEY == "\"\"") {
+            return@withContext Result.failure(Exception("API_KEY_MISSING"))
         }
         
         try {
-            android.util.Log.d("GeminiDebug", "Preparing Gemini request...")
             val products = shopRepository.observeProducts().first()
             val topProducts = shopRepository.topProducts(0) 
             val colors = shopRepository.colorBreakdown(0)
@@ -52,7 +45,6 @@ class AIRepository @Inject constructor(
 
             val systemPrompt = contextBuilder.buildSystemPrompt(businessContext)
 
-            android.util.Log.d("GeminiDebug", "Sending request to Gemini model...")
             val response = generativeModel.generateContent(
                 content {
                     text(systemPrompt)
@@ -61,34 +53,14 @@ class AIRepository @Inject constructor(
             )
             
             val responseText = response.text
-            android.util.Log.d("GeminiDebug", "Response received successfully")
-            
             if (responseText.isNullOrBlank()) {
-                android.util.Log.w("GeminiDebug", "Empty response text")
-                Result.failure(Exception("Gemini service returned no response text"))
+                Result.failure(Exception("EMPTY_RESPONSE"))
             } else {
                 Result.success(responseText)
             }
         } catch (e: Exception) {
-            val errorMessage = e.message ?: "Unknown error"
-            val stackTrace = e.stackTraceToString()
-            android.util.Log.e("GeminiError", "Exception during Gemini request: $errorMessage")
-            android.util.Log.e("GeminiError", "Stacktrace: $stackTrace")
-            
-            val customException = when {
-                errorMessage.contains("401") || errorMessage.contains("403") || errorMessage.contains("API_KEY_INVALID") -> 
-                    Exception("Invalid Gemini API Key")
-                errorMessage.contains("429") || errorMessage.contains("quota") -> 
-                    Exception("Quota exceeded")
-                errorMessage.contains("500") || errorMessage.contains("503") || errorMessage.contains("unavailable") -> 
-                    Exception("Gemini service unavailable")
-                errorMessage.contains("timeout") || errorMessage.contains("Timed out") -> 
-                    Exception("Connection timeout")
-                errorMessage.contains("No address associated with hostname") || errorMessage.contains("Unable to resolve host") ->
-                    Exception("No internet connection")
-                else -> e
-            }
-            Result.failure(customException)
+            Log.e("AIRepository", "Gemini API Error: ${e.message}", e)
+            Result.failure(e)
         }
     }
 }

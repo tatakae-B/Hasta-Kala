@@ -4,6 +4,7 @@
     <string name="nav_products">தயாரிப்புகள்</string>
     <string name="nav_add_product">தயாரிப்பைச் சேர்</string>
     <string name="nav_sales">விற்பனை</string>
+    <string name="nav_analytics">பகுப்பாய்வு</string>
     <string name="nav_profile">சுயவிவரம்</string>
     <string name="logout">வெளியேறு</string>
     <string name="menu_title">ஹஸ்த கலா மெனு</string>
@@ -16,4 +17,80 @@
     <string name="lang_kannada">ಕನ್ನಡ</string>
     <string name="lang_telugu">తెలుగు</string>
     <string name="btn_close">மூடு</string>
+
+    <!-- Landing & Login -->
+    <string name="welcome_title">ஹஸ்த கலாவுக்கு உங்களை வரவேற்கிறோம்</string>
+    <string name="welcome_subtitle">உங்கள் கைவினை வணிகத்தை எளிதாக நிர்வகிக்கவும்</string>
+    <string name="welcome_desc">நவீன டிஜிட்டல் லென்ஸ் மூலம் கைவினைஞர்களின் ஆன்மாவைக் கண்டறியவும்.</string>
+    <string name="btn_get_started">தொடங்குவோம்</string>
+    <string name="login_register">உள்நுழைக / பதிவு செய்க</string>
+    <string name="continue_guest">விருந்தினராகத் தொடரவும்</string>
+    <string name="welcome_back">மீண்டும் வருக!</string>
+    <string name="login_subtitle">உங்கள் பயணத்தைத் தொடர உள்நுழையவும்</string>
+    <string name="empowering_artisans">கைவினைஞர்களை டிஜிட்டல் முறையில் மேம்படுத்துதல்</string>
+    <string name="tab_mobile_login">மொபைல் உள்நுழைவு</string>
+    <string name="tab_email_login">மின்னஞ்சல் உள்நுழைவு</string>
+    <string name="placeholder_mobile">மொபைல் எண்</string>
+    <string name="placeholder_email">மின்னஞ்சல் முகவரி</string>
+    <string name="btn_send_otp">OTP அனுப்பவும்</string>
+    <string name="btn_continue">தொடரவும்</string>
+    <string name="btn_continue_google">கூகுள் மூலம் தொடரவும்</string>
+    <string name="feature_secure">பாதுகாப்பானது &amp; நம்பகமானது</string>
+    <string name="feature_grow">வணிகத்தை வளர்க்கவும்</string>
+    <string name="feature_made_for_artisans">கைவினைஞர்களுக்காக உருவாக்கப்பட்டது</string>
+    <string name="new_to_hastakala">ஹஸ்த கலாவுக்குப் புதியவரா? </string>
+    <string name="create_account">கணக்கை உருவாக்கவும்</string>
+
+    <!-- Auth Errors & Status -->
+    <string name="enter_phone">தொலைபேசி எண்ணை உள்ளிடவும்</string>
+    <string name="enter_otp">OTP-ஐ உள்ளிடவும்</string>
+    <string name="otp_sent">OTP வெற்றிகரமாக அனுப்பப்பட்டது</string>
+    <string name="resend_otp">மீண்டும் OTP அனுப்பவும்</string>
+    <string name="invalid_phone">சரியான தொலைபேசி எண்ணை உள்ளிடவும்</string>
+
+    <!-- Profile Setup -->
+    <string name="hint_artisan_name">கைவினைஞர் பெயர்</string>
+    <string name="hint_shop_name">கடை பெயர்</string>
+    <string name="hint_email">மின்னஞ்சல் முகவரி</string>
+    <string name="hint_phone">தொலைபேசி எண்</string>
+    <string name="hint_location">இடம்</string>
+    <string name="profile_updated">சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!</string>
+
+    <!-- Dashboard -->
+    <string name="stat_total_sales">மொத்த விற்பனை</string>
+    <string name="stat_total_products">மொத்த தயாரிப்புகள்</string>
+    <string name="stat_low_stock">குறைந்த இருப்பு</string>
+    <string name="stat_profit">லாபம்</string>
+    <string name="label_sales_summary">விற்பனை சுருக்கம்</string>
+    <string name="label_top_products">சிறந்த தயாரிப்புகள்</string>
+
+    <!-- Product Management -->
+    <string name="title_add_product">புதிய தயாரிப்பைச் சேர்</string>
+    <string name="hint_product_name">தயாரிப்பு பெயர்</string>
+    <string name="hint_color_variant">நிறம் / வகை</string>
+    <string name="hint_cost_price">அடக்க விலை</string>
+    <string name="hint_selling_price">விற்பனை விலை</string>
+    <string name="hint_initial_stock">ஆரம்ப இருப்பு</string>
+    <string name="btn_save_product">தயாரிப்பைச் சேமி</string>
+    <string name="btn_update">புதுப்பி</string>
+    <string name="btn_cancel">ரத்துசெய்</string>
+
+    <!-- Categories -->
+    <string name="label_categories">வகைகள்</string>
+    <string name="cat_pottery">மண்பாண்டம் &amp; களிமண்</string>
+    <string name="cat_textile">ஜவுளி &amp; கைத்தறி</string>
+    <string name="cat_jewellery">ஆபரணங்கள்</string>
+    <string name="cat_wood">மரம் &amp; மூங்கில்</string>
+    <string name="cat_art">கலை &amp; ஓவியங்கள்</string>
+    <string name="cat_home">வீட்டு அலங்காரம்</string>
+    <string name="cat_eco">சுற்றுச்சூழல் நட்பு தயாரிப்புகள்</string>
+    <string name="cat_misc">இதர</string>
+
+    <!-- Security -->
+    <string name="section_security">பாதுகாப்பு</string>
+    <string name="label_app_lock">ஆப் லாக்</string>
+    <string name="label_fingerprint">கைரேகை அன்லாக்</string>
+    <string name="auth_title">ஆப் லாக்</string>
+    <string name="auth_subtitle">ஹஸ்த-கலா ஷாப்பை அணுக அங்கீகரிக்கவும்</string>
+    <string name="btn_unlock_app">ஆப்பை அன்லாக் செய்</string>
 </resources>

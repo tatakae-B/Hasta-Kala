@@ -9,6 +9,7 @@ data class UserProfile(
     val contact: String = "",
     val shopName: String = "",
     val location: String = "",
+    val profileImageUrl: String = "",
     val loginMethod: String = "",
     val createdAt: Timestamp = Timestamp.now()
 )
@@ -34,5 +35,10 @@ data class FirestoreSaleRecord(
     val costPrice: Double = 0.0,
     val unitPrice: Double = 0.0,
     val subtotal: Double = 0.0,
-    val timestamp: Long = 0L
+    val paymentMethod: String = "Cash",
+    val customerName: String = "",
+    val customerContact: String = "",
+    val notes: String = "",
+    val timestamp: Long = 0L,
+    val lastModified: Long = 0L
 )

@@ -105,6 +105,7 @@ class ProfileSetupActivity : AppCompatActivity() {
                         email = email,
                         contact = contact,
                         location = location,
+                        profileImageUrl = selectedImageUri?.toString() ?: "",
                         loginMethod = user.providerData.lastOrNull()?.providerId ?: "email",
                         createdAt = Timestamp.now()
                     )

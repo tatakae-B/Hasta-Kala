@@ -26,7 +26,7 @@ import java.util.*
 @Composable
 fun ExportBottomSheet(
     onDismiss: () -> Unit,
-    onExportRequested: (ExportType, ExportFormat, Long, Long) -> Unit
+    onExportRequested: (ExportType, ExportFormat, ExportTimeRange, Long, Long) -> Unit
 ) {
     var selectedType by remember { mutableStateOf(ExportType.SALES) }
     var selectedFormat by remember { mutableStateOf(ExportFormat.PDF) }
@@ -183,7 +183,7 @@ fun ExportBottomSheet(
             Button(
                 onClick = {
                     val (start, end) = getRangeTimestamps(selectedRange, customStartDate, customEndDate)
-                    onExportRequested(selectedType, selectedFormat, start, end)
+                    onExportRequested(selectedType, selectedFormat, selectedRange, start, end)
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(16.dp),
