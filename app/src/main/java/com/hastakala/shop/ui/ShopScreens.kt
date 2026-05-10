@@ -31,10 +31,8 @@ import com.hastakala.shop.R
 import com.hastakala.shop.data.*
 import com.hastakala.shop.viewmodel.ShopViewModel
 import com.hastakala.shop.viewmodel.TimeFilter
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import com.hastakala.shop.ui.theme.*
 
 data class ArtisanCategory(val nameRes: Int, val shortNameRes: Int, val items: List<String>)
@@ -101,7 +99,7 @@ fun CategoryLegendRow(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     totalSales: Double,
@@ -125,12 +123,11 @@ fun DashboardScreen(
     onRefresh: () -> Unit,
     onExportCsv: () -> Unit
 ) {
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = isRefreshing,
-        onRefresh = onRefresh
-    )
-
-    Box(modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)) {
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -364,14 +361,6 @@ fun DashboardScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
         }
-
-        PullRefreshIndicator(
-            refreshing = isRefreshing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-            contentColor = MaterialTheme.colorScheme.primary,
-            backgroundColor = MaterialTheme.colorScheme.surface
-        )
     }
 }
 

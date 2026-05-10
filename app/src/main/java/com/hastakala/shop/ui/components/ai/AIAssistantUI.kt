@@ -4,14 +4,16 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -126,7 +128,12 @@ fun AIChatWindow(
 ) {
     val messages by viewModel.chatMessages.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val businessContext by viewModel.businessContext.collectAsState()
     var inputText by remember { mutableStateOf("") }
+
+    LaunchedEffect(language) {
+        viewModel.loadBusinessContext(language)
+    }
 
     Card(
         modifier = Modifier
@@ -185,7 +192,10 @@ fun AIChatWindow(
             }
 
             // Quick Actions
-            QuickActions(onActionClick = { viewModel.sendMessage(it, language) })
+            QuickActions(
+                actions = businessContext?.quickActions ?: emptyList(),
+                onActionClick = { viewModel.sendMessage(it, language) }
+            )
 
             // Input
             Row(
@@ -289,27 +299,67 @@ fun TypingIndicator() {
 }
 
 @Composable
-fun QuickActions(onActionClick: (String) -> Unit) {
-    val actions = listOf(
-        "Best selling product?",
-        "What should I restock?",
-        "Profit this month",
-        "Low stock items"
-    )
+fun QuickActions(
+    actions: List<String>,
+    onActionClick: (String) -> Unit
+) {
+    if (actions.isEmpty()) return
     
-    ScrollableTabRow(
-        selectedTabIndex = -1,
-        edgePadding = 12.dp,
-        indicator = {},
-        divider = {},
-        containerColor = Color.Transparent
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
-        actions.forEach { action ->
-            SuggestionChip(
-                onClick = { onActionClick(action) },
-                label = { Text(action, fontSize = 12.sp) },
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
+        Text(
+            text = "Suggested Actions",
+            style = MaterialTheme.typography.labelSmall,
+            color = Color(0xFF8D6E63).copy(alpha = 0.7f),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            fontWeight = FontWeight.Bold
+        )
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            actions.forEach { action ->
+                Surface(
+                    onClick = { onActionClick(action) },
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFF8D6E63).copy(alpha = 0.08f),
+                    border = androidx.compose.foundation.BorderStroke(
+                        width = 1.dp,
+                        color = Color(0xFF8D6E63).copy(alpha = 0.2f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = when {
+                                action.contains("restock", ignoreCase = true) -> Icons.Default.Inventory
+                                action.contains("selling", ignoreCase = true) -> Icons.AutoMirrored.Filled.TrendingUp
+                                action.contains("profit", ignoreCase = true) -> Icons.Default.Payments
+                                else -> Icons.Default.Lightbulb
+                            },
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = Color(0xFF5D4037)
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            text = action,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF5D4037)
+                        )
+                    }
+                }
+            }
         }
     }
 }

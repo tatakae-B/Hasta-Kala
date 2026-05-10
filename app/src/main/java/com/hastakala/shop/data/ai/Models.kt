@@ -13,5 +13,6 @@ data class BusinessContext(
     val totalRevenue: Double,
     val totalProfit: Double,
     val slowMovingProducts: List<String>,
-    val appLanguage: String
+    val appLanguage: String,
+    val quickActions: List<String> = emptyList()
 )

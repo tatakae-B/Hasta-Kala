@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hastakala.shop.data.ai.AIRepository
 import com.hastakala.shop.data.ai.ChatMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import com.hastakala.shop.data.ai.BusinessContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +22,19 @@ class AIViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _businessContext = MutableStateFlow<BusinessContext?>(null)
+    val businessContext: StateFlow<BusinessContext?> = _businessContext.asStateFlow()
+
+    fun loadBusinessContext(language: String) {
+        viewModelScope.launch {
+            try {
+                _businessContext.value = aiRepository.getBusinessContext(language)
+            } catch (e: Exception) {
+                android.util.Log.e("AIViewModel", "Failed to load business context", e)
+            }
+        }
+    }
 
     fun sendMessage(text: String, language: String) {
         if (text.isBlank()) return
