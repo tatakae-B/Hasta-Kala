@@ -992,36 +992,36 @@ fun ProfileScreen(
             confirmButton = {
                 if (helpScreenType == 0) {
                     TextButton(onClick = { showHelpSupport = false }) { Text(stringResource(R.string.btn_close)) }
+                } else if (helpScreenType == 2) {
+                    Button(onClick = { helpScreenType = 0 }) { Text("Back") }
                 } else {
                     Button(onClick = {
-                        if (helpScreenType == 1 || helpScreenType == 3) {
-                            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                data = "mailto:".toUri()
-                                putExtra(Intent.EXTRA_EMAIL, arrayOf("contactbdriii@gmail.com"))
-                                if (helpScreenType == 3) {
-                                    putExtra(Intent.EXTRA_SUBJECT, "App Report: Hasta-Kala Shop")
-                                } else {
-                                    putExtra(Intent.EXTRA_SUBJECT, "Support Request: Hasta-Kala Shop")
-                                }
+                        val intent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = "mailto:".toUri()
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf("contactbdriii@gmail.com"))
+                            if (helpScreenType == 3) {
+                                putExtra(Intent.EXTRA_SUBJECT, "App Report: Hasta-Kala Shop")
+                            } else {
+                                putExtra(Intent.EXTRA_SUBJECT, "Support Request: Hasta-Kala Shop")
                             }
-                            try {
-                                context.startActivity(Intent.createChooser(intent, "Send Email"))
-                                if (helpScreenType == 3) {
-                                    Toast.makeText(context, R.string.report_success, Toast.LENGTH_LONG).show()
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+                        }
+                        try {
+                            context.startActivity(Intent.createChooser(intent, "Send Email"))
+                            if (helpScreenType == 3) {
+                                Toast.makeText(context, R.string.report_success, Toast.LENGTH_LONG).show()
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
                         }
                         helpScreenType = 0
                     }) { 
-                        Text(if (helpScreenType == 3) stringResource(R.string.btn_send_report) else if (helpScreenType == 1) "Open Email" else "Back") 
+                        Text(if (helpScreenType == 3) stringResource(R.string.btn_send_report) else "Open Email") 
                     }
                 }
             },
             dismissButton = {
-                if (helpScreenType != 0) {
+                if (helpScreenType == 1 || helpScreenType == 3) {
                     TextButton(onClick = { helpScreenType = 0 }) { Text("Back") }
                 }
             }
